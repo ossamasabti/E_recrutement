@@ -1,0 +1,1015 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+
+{% block title %}Créer un compte - E-Recrutement{% endblock %}
+
+{% block content %}
+
+<div class="page-container" style="min-height: 100vh; background: linear-gradient(135deg, var(--bg) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; padding: 20px;">
+    
+    <div style="max-width: 1200px; width: 100%;">
+        <div style="display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-soft); background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.1);">
+            
+            <!-- Pour desktop: deux colonnes -->
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; flex-direction: column;">
+                    
+                    <!-- Colonne gauche - Illustration (sur desktop) -->
+                    <div style="display: none; padding: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);">
+                        <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px; color: white;">
+                            <div style="text-align: center; margin-bottom: 40px;">
+                                <img src="{% static 'images/cree.png' %}" 
+                                     alt="Création de compte" 
+                                     style="max-height: 180px; width: auto; margin: 0 auto;">
+                            </div>
+                            
+                            <h3 style="font-weight: 600; margin-bottom: 30px; text-align: center;">Rejoignez notre communauté</h3>
+                            
+                            <div>
+                                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="bi bi-briefcase-fill" style="font-size: 16px;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">Trouvez votre opportunité</div>
+                                        <div style="font-size: 13px; opacity: 0.9;">Accédez à des offres exclusives</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="bi bi-rocket-takeoff-fill" style="font-size: 16px;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">Candidature simplifiée</div>
+                                        <div style="font-size: 13px; opacity: 0.9;">Postulez en quelques clics</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+                                        <i class="bi bi-bell-fill" style="font-size: 16px;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">Notifications en temps réel</div>
+                                        <div style="font-size: 13px; opacity: 0.9;">Soyez informé des mises à jour</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.25);">
+                                <div style="font-size: 13px; opacity: 0.9; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-shield-check" style="margin-right: 8px;"></i>
+                                    Vos données sont sécurisées et protégées
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colonne droite - Formulaire d'inscription -->
+                    <div style="padding: 40px;">
+                        <!-- Logo et titre -->
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="margin-bottom: 20px;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); display: inline-flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-person-plus-fill" style="color: white; font-size: 24px;"></i>
+                                </div>
+                            </div>
+                            <h1 style="color: var(--primary); font-size: 28px; font-weight: 700; margin-bottom: 10px;">Créer un compte</h1>
+                            <div style="color: var(--muted); margin-bottom: 30px;">Remplissez le formulaire ci-dessous pour vous inscrire</div>
+                        </div>
+                        
+                        <!-- Messages d'erreur/succès -->
+                        {% if messages %}
+                        <div style="margin-bottom: 24px;">
+                            {% for message in messages %}
+                            <div class="flash-message {% if message.tags == 'success' %}flash-success{% elif message.tags == 'error' %}flash-error{% endif %}" style="position: relative; top: 0; right: 0; margin-bottom: 10px;">
+                                <div class="flash-dot {% if message.tags == 'success' %}flash-dot-success{% elif message.tags == 'error' %}flash-dot-error{% endif %}"></div>
+                                <div>{{ message }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if form.errors %}
+                        <div style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 14px; padding: 16px; margin-bottom: 24px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <i class="bi bi-exclamation-triangle-fill" style="font-size: 18px; margin-top: 2px;"></i>
+                                <div>
+                                    <div style="font-weight: 600; margin-bottom: 8px;">Veuillez corriger les erreurs ci-dessous :</div>
+                                    <ul style="margin: 8px 0 0 0; padding-left: 20px; font-size: 14px; color: var(--text);">
+                                        {% for field in form %}
+                                            {% for error in field.errors %}
+                                                <li>{{ field.label }}: {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Formulaire d'inscription -->
+                        <form method="post" id="registerForm">
+                            {% csrf_token %}
+                            
+                            <!-- Section Informations de base -->
+                            <div style="margin-bottom: 30px;">
+                                <h6 style="color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); font-size: 16px;">
+                                    <i class="bi bi-person-badge" style="margin-right: 8px;"></i>Informations personnelles
+                                </h6>
+                                
+                                <!-- Prénom et Nom -->
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px;">
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Prénom <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="first_name" 
+                                                   id="id_first_name"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Votre prénom"
+                                                   required>
+                                        </div>
+                                        <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Votre prénom tel qu'il apparaîtra sur votre profil</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Nom <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="last_name" 
+                                                   id="id_last_name"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Votre nom"
+                                                   required>
+                                        </div>
+                                        <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Votre nom de famille</div>
+                                    </div>
+                                </div>
+                            
+                                <!-- Nom d'utilisateur -->
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                        Nom d'utilisateur <span style="color: var(--danger);">*</span>
+                                    </label>
+                                    <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                        <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                            <i class="bi bi-at"></i>
+                                        </span>
+                                        <input type="text" 
+                                               name="username" 
+                                               id="id_username"
+                                               style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                               placeholder="Choisissez un nom d'utilisateur"
+                                               required>
+                                    </div>
+                                    <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Ce nom sera utilisé pour vous connecter (lettres, chiffres et @/./+/-/_ seulement)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Coordonnées -->
+                            <div style="margin-bottom: 30px;">
+                                <h6 style="color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); font-size: 16px;">
+                                    <i class="bi bi-envelope" style="margin-right: 8px;"></i>Coordonnées
+                                </h6>
+                                
+                                <!-- Email -->
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                        Adresse email <span style="color: var(--danger);">*</span>
+                                    </label>
+                                    <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                        <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                            <i class="bi bi-envelope"></i>
+                                        </span>
+                                        <input type="email" 
+                                               name="email" 
+                                               value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
+                                               id="id_email"
+                                               style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                               placeholder="exemple@email.com"
+                                               required>
+                                    </div>
+                                    <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Nous vous enverrons un email de confirmation</div>
+                                </div>
+                                
+                                <!-- Téléphone -->
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                        Téléphone
+                                    </label>
+                                    <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                        <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                            <i class="bi bi-telephone"></i>
+                                        </span>
+                                        <input type="tel" 
+                                               name="phone" 
+                                               id="id_phone"
+                                               style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                               placeholder="+33 1 23 45 67 89">
+                                    </div>
+                                    <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Numéro de contact facultatif</div>
+                                </div>
+                                
+                                <!-- Adresse -->
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                        Adresse complète
+                                    </label>
+                                    <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                        <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: flex-start; padding-top: 16px;">
+                                            <i class="bi bi-geo-alt"></i>
+                                        </span>
+                                        <textarea name="address" 
+                                                  id="id_address"
+                                                  style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; background: var(--card-bg); color: var(--text);"
+                                                  placeholder="Votre adresse complète (rue, code postal, ville, pays)"
+                                                  rows="4"></textarea>
+                                    </div>
+                                    <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">
+                                        Renseignez votre adresse complète pour faciliter les échanges avec les recruteurs
+                                    </div>
+                                </div>
+                                
+                                <!-- Code postal, Ville, Pays -->
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px;">
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Code postal
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-postcard"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="postal_code" 
+                                                   id="id_postal_code"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="75000">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Ville
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-building"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="city" 
+                                                   id="id_city"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Votre ville">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Pays
+                                        </label>
+                                        <select name="country" 
+                                                id="id_country"
+                                                style="width: 100%; padding: 12px; border: 1px solid var(--primary); border-radius: var(--radius-md); font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);">
+                                            <option value="">Sélectionnez...</option>
+                                        </select>
+
+                                        <input type="text" 
+                                            id="country-search" 
+                                            placeholder="Tapez pour filtrer les pays..."
+                                            style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Informations professionnelles -->
+                            <div style="margin-bottom: 30px;">
+                                <h6 style="color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); font-size: 16px;">
+                                    <i class="bi bi-briefcase" style="margin-right: 8px;"></i>Informations professionnelles
+                                </h6>
+                                
+                                <!-- Profession et Niveau d'étude -->
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px;">
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Profession actuelle
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-briefcase"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="profession" 
+                                                   id="id_profession"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Ex: Développeur Web, Chef de projet...">
+                                        </div>
+                                        <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Votre poste actuel ou dernier poste occupé</div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Niveau d'étude
+                                        </label>
+                                        <select name="niveau_etude" 
+                                                id="id_niveau_etude"
+                                                style="width: 100%; padding: 12px; border: 1px solid var(--primary); border-radius: var(--radius-md); font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);">
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="bac">Baccalauréat</option>
+                                            <option value="bac+2">Bac+2 (BTS, DUT...)</option>
+                                            <option value="bac+3">Licence (Bac+3)</option>
+                                            <option value="bac+5">Master (Bac+5)</option>
+                                            <option value="doctorat">Doctorat</option>
+                                            <option value="autre">Autre</option>
+                                        </select>
+                                        <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Votre plus haut niveau d'études</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expérience -->
+                                <div style="margin-bottom: 16px;">
+                                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                        Années d'expérience
+                                    </label>
+                                    <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                        <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                            <i class="bi bi-calendar"></i>
+                                        </span>
+                                        <input type="number" 
+                                               name="experience" 
+                                               id="id_experience"
+                                               style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                               placeholder="0"
+                                               min="0"
+                                               max="50">
+                                        <span style="padding: 12px; border-left: 1px solid var(--primary); color: var(--primary); background: var(--bg);">
+                                            années
+                                        </span>
+                                    </div>
+                                    <div style="color: var(--muted); font-size: 13px; margin-top: 6px;">Nombre d'années d'expérience professionnelle</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Section Mot de passe -->
+                            <div style="margin-bottom: 30px;">
+                                <h6 style="color: var(--primary); font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); font-size: 16px;">
+                                    <i class="bi bi-shield-lock" style="margin-right: 8px;"></i>Sécurité du compte
+                                </h6>
+                                
+                                <!-- Mot de passe et confirmation -->
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px;">
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Mot de passe <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-lock"></i>
+                                            </span>
+                                            <input type="password" 
+                                                   name="password1" 
+                                                   id="id_password1"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Créez un mot de passe"
+                                                   required>
+                                            <button type="button" class="toggle-password" data-target="id_password1" style="padding: 12px; background: var(--bg); border: none; color: var(--primary); cursor: pointer;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div id="password-strength" style="margin-top: 8px;">
+                                            <div style="height: 5px; background-color: rgba(148, 163, 184, 0.2); border-radius: 3px; overflow: hidden;">
+                                                <div id="password-strength-bar" style="height: 100%; width: 0%; background-color: var(--danger); border-radius: 3px;"></div>
+                                            </div>
+                                            <div id="password-strength-text" style="font-size: 12px; margin-top: 4px; color: var(--muted);"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                                            Confirmation <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <div style="display: flex; border: 1px solid var(--primary); border-radius: var(--radius-md); overflow: hidden;">
+                                            <span style="padding: 12px; background: var(--bg); color: var(--primary); display: flex; align-items: center;">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                            <input type="password" 
+                                                   name="password2" 
+                                                   id="id_password2"
+                                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px; background: var(--card-bg); color: var(--text);"
+                                                   placeholder="Confirmez le mot de passe"
+                                                   required>
+                                            <button type="button" class="toggle-password" data-target="id_password2" style="padding: 12px; background: var(--bg); border: none; color: var(--primary); cursor: pointer;">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div id="password-match" style="display: none; margin-top: 8px;">
+                                            <i class="bi bi-check-circle-fill" style="color: var(--success); margin-right: 6px;"></i>
+                                            <span style="color: var(--success); font-size: 13px;">Les mots de passe correspondent</span>
+                                        </div>
+                                        <div id="password-mismatch" style="display: none; margin-top: 8px;">
+                                            <i class="bi bi-x-circle-fill" style="color: var(--danger); margin-right: 6px;"></i>
+                                            <span style="color: var(--danger); font-size: 13px;">Les mots de passe ne correspondent pas</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Conseils mot de passe -->
+                                <div style="background-color: var(--primary-light); border-left: 4px solid var(--primary); padding: 16px; border-radius: var(--radius-md);">
+                                    <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                        <i class="bi bi-info-circle" style="color: var(--primary); margin-top: 2px;"></i>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">Conseils pour un mot de passe sécurisé :</div>
+                                            <ul style="margin: 0; padding-left: 20px; color: var(--text); font-size: 13px;">
+                                                <li>Au moins 8 caractères</li>
+                                                <li>Combinaison de lettres majuscules et minuscules</li>
+                                                <li>Au moins un chiffre et un caractère spécial (@$!%*?&)</li>
+                                                <li>Évitez les mots courants ou les informations personnelles</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Conditions d'utilisation -->
+                            <div style="margin-bottom: 30px;">
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                                    <input type="checkbox" id="terms" required style="margin-top: 4px; accent-color: var(--primary);">
+                                    <label for="terms" style="font-size: 14px; color: var(--text);">
+                                        J'accepte les 
+                                        <a href="{% static 'files/Conditions.pdf' %}" download="conditions.pdf" style="color: var(--primary); text-decoration: none;">conditions d'utilisation</a> 
+                                        et la 
+                                        <a href="{% static 'files/politique.pdf' %}" download="politique.pdf" style="color: var(--primary); text-decoration: none;">politique de confidentialité</a>
+                                        <span style="color: var(--danger);">*</span>
+                                    </label>
+                                </div>
+                                
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                                    <input type="checkbox" id="newsletter" style="margin-top: 4px; accent-color: var(--primary);">
+                                    <label for="newsletter" style="font-size: 14px; color: var(--text);">
+                                        Je souhaite recevoir des offres d'emploi et des actualités par email
+                                    </label>
+                                </div>
+                                
+                                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                                    <input type="checkbox" id="cv_consent" style="margin-top: 4px; accent-color: var(--primary);">
+                                    <label for="cv_consent" style="font-size: 14px; color: var(--text);">
+                                        J'autorise le partage de mon CV avec les recruteurs lorsque je postule
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Bouton d'inscription -->
+                            <div style="margin-bottom: 30px;">
+                                <button type="submit" class="btn-custom-primary" style="width: 100%; padding: 16px; font-size: 16px; font-weight: 500; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: var(--radius-md); cursor: pointer;">
+                                    <i class="bi bi-person-plus" style="margin-right: 10px;"></i>Créer mon compte
+                                </button>
+                            </div>
+                            
+                            <!-- Séparateur -->
+                            <div style="position: relative; text-align: center; margin: 30px 0;">
+                                <div style="height: 1px; background-color: rgba(148, 163, 184, 0.3);"></div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--card-bg); padding: 0 15px; color: var(--primary); font-size: 14px;">
+                                    Ou
+                                </div>
+                            </div>
+                        
+                            
+                            <!-- Lien de connexion -->
+                            <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                                <div style="color: var(--primary);">
+                                    Vous avez déjà un compte ?
+                                    <a href="{% url 'login' %}" style="color: var(--primary-dark); text-decoration: none; font-weight: 500;">
+                                        Connectez-vous ici
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Style supplémentaire -->
+<style>
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Styles pour le mode sombre */
+    .dark-mode input,
+    .dark-mode select,
+    .dark-mode textarea {
+        background-color: var(--card-bg) !important;
+        color: var(--text) !important;
+        border-color: rgba(148, 163, 184, 0.4) !important;
+    }
+    
+    .dark-mode span[style*="background: var(--bg)"] {
+        background-color: var(--primary-light) !important;
+    }
+    
+    .dark-mode .toggle-password {
+        background-color: var(--primary-light) !important;
+    }
+    
+    .dark-mode button[type="button"]:not(.toggle-password) {
+        background-color: var(--card-bg) !important;
+        border-color: rgba(148, 163, 184, 0.4) !important;
+    }
+    
+    .dark-mode button[type="button"]:not(.toggle-password):hover {
+        background-color: var(--primary-light) !important;
+    }
+    
+    .dark-mode .btn-custom-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
+    }
+    
+    /* Styles pour les couleurs spécifiques */
+    .btn-custom-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Styles pour les champs de formulaire */
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--muted);
+        opacity: 0.7;
+    }
+    
+    /* Styles pour la force du mot de passe */
+    #password-strength-bar {
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    
+    /* Styles pour les messages d'erreur */
+    .flash-message {
+        transition: all 0.3s ease;
+    }
+    
+    /* Responsive */
+    @media (min-width: 768px) {
+        .page-container > div > div {
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .page-container > div > div > div:first-child {
+            display: flex;
+            flex: 1;
+        }
+        
+        .page-container > div > div > div:last-child {
+            flex: 2;
+            padding: 40px;
+        }
+    }
+    
+    @media (min-width: 992px) {
+        .page-container > div > div > div:first-child {
+            display: flex;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .page-container {
+            padding: 20px !important;
+        }
+        
+        .page-container > div > div {
+            border-radius: 12px !important;
+        }
+        
+        .page-container > div > div > div > div {
+            padding: 30px 20px !important;
+        }
+    }
+</style>
+
+<!-- Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                if (targetInput.type === 'password') {
+                    targetInput.type = 'text';
+                    icon.className = 'bi bi-eye-slash';
+                } else {
+                    targetInput.type = 'password';
+                    icon.className = 'bi bi-eye';
+                }
+            });
+        });
+        
+        // Vérification de la force du mot de passe
+        const passwordInput = document.getElementById('id_password1');
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        
+        if (passwordInput && strengthBar && strengthText) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                let text = '';
+                let color = '';
+                
+                // Vérifications
+                if (password.length >= 8) strength += 25;
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength += 25;
+                if (/[0-9]/.test(password)) strength += 25;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+                
+                // Mettre à jour la barre
+                strengthBar.style.width = strength + '%';
+                
+                // Déterminer le texte et la couleur
+                if (strength < 50) {
+                    color = 'var(--danger)'; // Rouge
+                    text = 'Faible';
+                } else if (strength < 75) {
+                    color = '#ffc107'; // Orange
+                    text = 'Moyen';
+                } else {
+                    color = 'var(--success)'; // Vert
+                    text = 'Fort';
+                }
+                
+                strengthBar.style.backgroundColor = color;
+                strengthText.textContent = `Force du mot de passe: ${text}`;
+                strengthText.style.color = color;
+            });
+        }
+        
+        // Vérification de la correspondance des mots de passe
+        const password2Input = document.getElementById('id_password2');
+        const matchDiv = document.getElementById('password-match');
+        const mismatchDiv = document.getElementById('password-mismatch');
+        
+        if (passwordInput && password2Input && matchDiv && mismatchDiv) {
+            function checkPasswordMatch() {
+                const password1 = passwordInput.value;
+                const password2 = password2Input.value;
+                
+                if (!password1 || !password2) {
+                    matchDiv.style.display = 'none';
+                    mismatchDiv.style.display = 'none';
+                    return;
+                }
+                
+                if (password1 === password2) {
+                    matchDiv.style.display = 'block';
+                    mismatchDiv.style.display = 'none';
+                } else {
+                    matchDiv.style.display = 'none';
+                    mismatchDiv.style.display = 'block';
+                }
+            }
+            
+            passwordInput.addEventListener('input', checkPasswordMatch);
+            password2Input.addEventListener('input', checkPasswordMatch);
+        }
+        
+        // Auto-complétion de la ville basée sur le code postal
+        const postalCodeInput = document.getElementById('id_postal_code');
+        const cityInput = document.getElementById('id_city');
+        
+        if (postalCodeInput && cityInput) {
+            postalCodeInput.addEventListener('blur', function() {
+                const postalCode = this.value.trim();
+                if (postalCode.length === 5 && /^\d+$/.test(postalCode)) {
+                    const postalCodes = {
+                        '75000': 'Paris',
+                        '69000': 'Lyon',
+                        '13000': 'Marseille',
+                        '31000': 'Toulouse',
+                        '33000': 'Bordeaux',
+                        '59000': 'Lille',
+                        '67000': 'Strasbourg',
+                        '44000': 'Nantes',
+                        '06000': 'Nice',
+                        '34000': 'Montpellier'
+                    };
+                    
+                    if (postalCodes[postalCode]) {
+                        cityInput.value = postalCodes[postalCode];
+                    }
+                }
+            });
+        }
+        
+        // Soumission du formulaire - validation supplémentaire
+        const form = document.getElementById('registerForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+
+                
+                // Validation mots de passe
+                const password1 = document.getElementById('id_password1').value;
+                const password2 = document.getElementById('id_password2').value;
+                const terms = document.getElementById('terms').checked;
+                
+                if (password1 !== password2) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas. Veuillez vérifier.');
+                    return false;
+                }
+                
+                if (!terms) {
+                    e.preventDefault();
+                    alert('Veuillez accepter les conditions d\'utilisation.');
+                    return false;
+                }
+                
+                // Si tout est ok, afficher un indicateur de chargement
+                const submitButton = form.querySelector('button[type="submit"]');
+                submitButton.innerHTML = '<i class="bi bi-hourglass-split" style="margin-right: 10px;"></i>Création en cours...';
+                submitButton.disabled = true;
+            });
+        }
+
+        const countrySelect = document.getElementById('id_country');
+        const searchInput = document.getElementById('country-search');
+    
+        // Liste complète des pays
+        const countries = [
+            {code: 'AF', name: 'Afghanistan'},
+            {code: 'ZA', name: 'Afrique du Sud'},
+            {code: 'AL', name: 'Albanie'},
+            {code: 'DZ', name: 'Algérie'},
+            {code: 'DE', name: 'Allemagne'},
+            {code: 'AD', name: 'Andorre'},
+            {code: 'AO', name: 'Angola'},
+            {code: 'AG', name: 'Antigua-et-Barbuda'},
+            {code: 'SA', name: 'Arabie saoudite'},
+            {code: 'AR', name: 'Argentine'},
+            {code: 'AM', name: 'Arménie'},
+            {code: 'AU', name: 'Australie'},
+            {code: 'AT', name: 'Autriche'},
+            {code: 'AZ', name: 'Azerbaïdjan'},
+            {code: 'BS', name: 'Bahamas'},
+            {code: 'BH', name: 'Bahreïn'},
+            {code: 'BD', name: 'Bangladesh'},
+            {code: 'BB', name: 'Barbade'},
+            {code: 'BE', name: 'Belgique'},
+            {code: 'BZ', name: 'Belize'},
+            {code: 'BJ', name: 'Bénin'},
+            {code: 'BT', name: 'Bhoutan'},
+            {code: 'BY', name: 'Biélorussie'},
+            {code: 'MM', name: 'Birmanie'},
+            {code: 'BO', name: 'Bolivie'},
+            {code: 'BA', name: 'Bosnie-Herzégovine'},
+            {code: 'BW', name: 'Botswana'},
+            {code: 'BR', name: 'Brésil'},
+            {code: 'BN', name: 'Brunei'},
+            {code: 'BG', name: 'Bulgarie'},
+            {code: 'BF', name: 'Burkina Faso'},
+            {code: 'BI', name: 'Burundi'},
+            {code: 'KH', name: 'Cambodge'},
+            {code: 'CM', name: 'Cameroun'},
+            {code: 'CA', name: 'Canada'},
+            {code: 'CV', name: 'Cap-Vert'},
+            {code: 'CL', name: 'Chili'},
+            {code: 'CN', name: 'Chine'},
+            {code: 'CY', name: 'Chypre'},
+            {code: 'CO', name: 'Colombie'},
+            {code: 'KM', name: 'Comores'},
+            {code: 'CG', name: 'Congo-Brazzaville'},
+            {code: 'CD', name: 'Congo-Kinshasa'},
+            {code: 'KP', name: 'Corée du Nord'},
+            {code: 'KR', name: 'Corée du Sud'},
+            {code: 'CR', name: 'Costa Rica'},
+            {code: 'CI', name: 'Côte d\'Ivoire'},
+            {code: 'HR', name: 'Croatie'},
+            {code: 'CU', name: 'Cuba'},
+            {code: 'DK', name: 'Danemark'},
+            {code: 'DJ', name: 'Djibouti'},
+            {code: 'DM', name: 'Dominique'},
+            {code: 'EG', name: 'Égypte'},
+            {code: 'AE', name: 'Émirats arabes unis'},
+            {code: 'EC', name: 'Équateur'},
+            {code: 'ER', name: 'Érythrée'},
+            {code: 'ES', name: 'Espagne'},
+            {code: 'EE', name: 'Estonie'},
+            {code: 'SZ', name: 'Eswatini'},
+            {code: 'US', name: 'États-Unis'},
+            {code: 'ET', name: 'Éthiopie'},
+            {code: 'FJ', name: 'Fidji'},
+            {code: 'FI', name: 'Finlande'},
+            {code: 'FR', name: 'France'},
+            {code: 'GA', name: 'Gabon'},
+            {code: 'GM', name: 'Gambie'},
+            {code: 'GE', name: 'Géorgie'},
+            {code: 'GH', name: 'Ghana'},
+            {code: 'GR', name: 'Grèce'},
+            {code: 'GD', name: 'Grenade'},
+            {code: 'GT', name: 'Guatemala'},
+            {code: 'GN', name: 'Guinée'},
+            {code: 'GQ', name: 'Guinée équatoriale'},
+            {code: 'GW', name: 'Guinée-Bissau'},
+            {code: 'GY', name: 'Guyana'},
+            {code: 'HT', name: 'Haïti'},
+            {code: 'HN', name: 'Honduras'},
+            {code: 'HU', name: 'Hongrie'},
+            {code: 'IN', name: 'Inde'},
+            {code: 'ID', name: 'Indonésie'},
+            {code: 'IQ', name: 'Irak'},
+            {code: 'IR', name: 'Iran'},
+            {code: 'IE', name: 'Irlande'},
+            {code: 'IS', name: 'Islande'},
+            {code: 'IT', name: 'Italie'},
+            {code: 'JM', name: 'Jamaïque'},
+            {code: 'JP', name: 'Japon'},
+            {code: 'JO', name: 'Jordanie'},
+            {code: 'KZ', name: 'Kazakhstan'},
+            {code: 'KE', name: 'Kenya'},
+            {code: 'KG', name: 'Kirghizistan'},
+            {code: 'KI', name: 'Kiribati'},
+            {code: 'KW', name: 'Koweït'},
+            {code: 'LA', name: 'Laos'},
+            {code: 'LS', name: 'Lesotho'},
+            {code: 'LV', name: 'Lettonie'},
+            {code: 'LB', name: 'Liban'},
+            {code: 'LR', name: 'Libéria'},
+            {code: 'LY', name: 'Libye'},
+            {code: 'LI', name: 'Liechtenstein'},
+            {code: 'LT', name: 'Lituanie'},
+            {code: 'LU', name: 'Luxembourg'},
+            {code: 'MG', name: 'Madagascar'},
+            {code: 'MY', name: 'Malaisie'},
+            {code: 'MW', name: 'Malawi'},
+            {code: 'MV', name: 'Maldives'},
+            {code: 'ML', name: 'Mali'},
+            {code: 'MT', name: 'Malte'},
+            {code: 'MA', name: 'Maroc'},
+            {code: 'MH', name: 'Marshall'},
+            {code: 'MU', name: 'Maurice'},
+            {code: 'MR', name: 'Mauritanie'},
+            {code: 'MX', name: 'Mexique'},
+            {code: 'FM', name: 'Micronésie'},
+            {code: 'MD', name: 'Moldavie'},
+            {code: 'MC', name: 'Monaco'},
+            {code: 'MN', name: 'Mongolie'},
+            {code: 'ME', name: 'Monténégro'},
+            {code: 'MZ', name: 'Mozambique'},
+            {code: 'NA', name: 'Namibie'},
+            {code: 'NR', name: 'Nauru'},
+            {code: 'NP', name: 'Népal'},
+            {code: 'NI', name: 'Nicaragua'},
+            {code: 'NE', name: 'Niger'},
+            {code: 'NG', name: 'Nigeria'},
+            {code: 'NO', name: 'Norvège'},
+            {code: 'NZ', name: 'Nouvelle-Zélande'},
+            {code: 'OM', name: 'Oman'},
+            {code: 'UG', name: 'Ouganda'},
+            {code: 'UZ', name: 'Ouzbékistan'},
+            {code: 'PK', name: 'Pakistan'},
+            {code: 'PW', name: 'Palaos'},
+            {code: 'PS', name: 'Palestine'},
+            {code: 'PA', name: 'Panama'},
+            {code: 'PG', name: 'Papouasie-Nouvelle-Guinée'},
+            {code: 'PY', name: 'Paraguay'},
+            {code: 'NL', name: 'Pays-Bas'},
+            {code: 'PE', name: 'Pérou'},
+            {code: 'PH', name: 'Philippines'},
+            {code: 'PL', name: 'Pologne'},
+            {code: 'PT', name: 'Portugal'},
+            {code: 'QA', name: 'Qatar'},
+            {code: 'RO', name: 'Roumanie'},
+            {code: 'GB', name: 'Royaume-Uni'},
+            {code: 'RU', name: 'Russie'},
+            {code: 'RW', name: 'Rwanda'},
+            {code: 'KN', name: 'Saint-Christophe-et-Niévès'},
+            {code: 'SM', name: 'Saint-Marin'},
+            {code: 'VC', name: 'Saint-Vincent-et-les-Grenadines'},
+            {code: 'LC', name: 'Sainte-Lucie'},
+            {code: 'SV', name: 'Salvador'},
+            {code: 'WS', name: 'Samoa'},
+            {code: 'ST', name: 'Sao Tomé-et-Principe'},
+            {code: 'SN', name: 'Sénégal'},
+            {code: 'RS', name: 'Serbie'},
+            {code: 'SC', name: 'Seychelles'},
+            {code: 'SL', name: 'Sierra Leone'},
+            {code: 'SG', name: 'Singapour'},
+            {code: 'SK', name: 'Slovaquie'},
+            {code: 'SI', name: 'Slovénie'},
+            {code: 'SO', name: 'Somalie'},
+            {code: 'SD', name: 'Soudan'},
+            {code: 'SS', name: 'Soudan du Sud'},
+            {code: 'LK', name: 'Sri Lanka'},
+            {code: 'SE', name: 'Suède'},
+            {code: 'CH', name: 'Suisse'},
+            {code: 'SR', name: 'Suriname'},
+            {code: 'SY', name: 'Syrie'},
+            {code: 'TJ', name: 'Tadjikistan'},
+            {code: 'TZ', name: 'Tanzanie'},
+            {code: 'TD', name: 'Tchad'},
+            {code: 'CZ', name: 'Tchéquie'},
+            {code: 'TH', name: 'Thaïlande'},
+            {code: 'TL', name: 'Timor oriental'},
+            {code: 'TG', name: 'Togo'},
+            {code: 'TO', name: 'Tonga'},
+            {code: 'TT', name: 'Trinité-et-Tobago'},
+            {code: 'TN', name: 'Tunisie'},
+            {code: 'TM', name: 'Turkménistan'},
+            {code: 'TR', name: 'Turquie'},
+            {code: 'TV', name: 'Tuvalu'},
+            {code: 'UA', name: 'Ukraine'},
+            {code: 'UY', name: 'Uruguay'},
+            {code: 'VU', name: 'Vanuatu'},
+            {code: 'VA', name: 'Vatican'},
+            {code: 'VE', name: 'Venezuela'},
+            {code: 'VN', name: 'Viêt Nam'},
+            {code: 'YE', name: 'Yémen'},
+            {code: 'ZM', name: 'Zambie'},
+            {code: 'ZW', name: 'Zimbabwe'}
+        ];
+        
+        // Trier par ordre alphabétique
+        countries.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+        
+        // Remplir le select initial
+        populateSelect(countries);
+        
+        // Afficher/masquer le champ de recherche
+        countrySelect.addEventListener('focus', function() {
+            searchInput.style.display = 'block';
+            searchInput.focus();
+        });
+        
+        // Filtrer les pays
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                populateSelect(countries);
+            } else {
+                const filtered = countries.filter(country => 
+                    country.name.toLowerCase().includes(searchTerm)
+                );
+                populateSelect(filtered);
+            }
+        });
+        
+        // Quand on sélectionne un pays, masquer le champ de recherche
+        countrySelect.addEventListener('change', function() {
+            searchInput.style.display = 'none';
+            searchInput.value = '';
+            populateSelect(countries); // Réafficher tous les pays
+        });
+        
+        function populateSelect(countryList) {
+            // Sauvegarder la valeur actuelle
+            const currentValue = countrySelect.value;
+            
+            // Vider le select (sauf la première option)
+            while (countrySelect.options.length > 1) {
+                countrySelect.remove(1);
+            }
+            
+            // Ajouter les pays
+            countryList.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country.code;
+                option.textContent = country.name;
+                countrySelect.appendChild(option);
+            });
+            
+            // Restaurer la sélection
+            if (currentValue) {
+                countrySelect.value = currentValue;
+            }
+        }
+    });
+</script>
+{% endblock %}

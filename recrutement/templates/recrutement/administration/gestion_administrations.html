@@ -1,0 +1,270 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Administrations{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="padding: 32px 5vw 48px; min-height: calc(100vh - 64px);">
+    <!-- En-tête -->
+    <div class="d-flex justify-content-between align-items-center mb-5" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+        <div>
+            <h1 class="mb-2" style="font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+                <i class="bi bi-buildings me-3"></i>Gestion des Administrations
+            </h1>
+            <p class="text-muted mb-0" style="color: var(--muted); margin-bottom: 0; font-size: 0.95rem;">
+                Interface réservée aux super administrateurs
+            </p>
+        </div>
+        <a href="{% url 'creer_administration' %}" 
+           class="btn btn-primary d-flex align-items-center"
+           style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 12px; padding: 12px 24px; text-decoration: none; display: flex; align-items: center; box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);">
+            <i class="bi bi-plus-circle me-2"></i>Nouvelle Administration
+        </a>
+    </div>
+
+    <!-- Tableau des administrations -->
+    <div style="background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-soft); border: 1px solid rgba(148, 163, 184, 0.1); overflow: hidden;">
+        <div style="padding: 25px; border-bottom: 1px solid rgba(148, 163, 184, 0.1);">
+            <div class="row align-items-center" style="display: flex; align-items: center;">
+                <div class="col-md-6" style="flex: 0 0 50%; max-width: 50%;">
+                    <h5 class="mb-0" style="font-weight: 600; color: var(--text); margin-bottom: 0;">
+                        <i class="bi bi-list me-3" style="color: var(--primary);"></i>Liste des Administrations
+                    </h5>
+                </div>
+                <div class="col-md-6" style="flex: 0 0 50%; max-width: 50%;">
+                    <div class="input-group" style="border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.3); display: flex;">
+                        <span class="input-group-text" style="background: var(--card-bg); border: none; color: var(--muted); padding: 12px 15px; display: flex; align-items: center;">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               id="searchInput" 
+                               placeholder="Rechercher une administration..."
+                               style="border: none; background: var(--card-bg); color: var(--text); padding: 12px; font-size: 0.95rem; flex: 1; outline: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 0;">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table table-hover mb-0" style="margin: 0; width: 100%; border-collapse: collapse;">
+                    <thead style="background: var(--primary-light); border-bottom: 2px solid rgba(148, 163, 184, 0.1);">
+                        <tr>
+                            <th style="padding: 20px; width: 60px; font-weight: 600; color: var(--text);">ID</th>
+                            <th style="padding: 20px; font-weight: 600; color: var(--text);">Administration</th>
+                            <th style="padding: 20px; width: 150px; font-weight: 600; color: var(--text);">Ville</th>
+                            <th style="padding: 20px; width: 180px; font-weight: 600; color: var(--text);">Type</th>
+                            <th style="padding: 20px; width: 140px; text-align: center; font-weight: 600; color: var(--text);">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admin in administrations %}
+                        <tr style="border-bottom: 1px solid rgba(148, 163, 184, 0.05); transition: all 0.2s ease;">
+                            <td style="padding: 20px; font-weight: 600; color: var(--muted);">#{{ admin.id_administration }}</td>
+                            <td style="padding: 20px;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 15px; box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);">
+                                        <i class="bi bi-building text-white" style="font-size: 18px;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">{{ admin.nom }}</div>
+                                        {% if admin.adresse %}
+                                        <small style="color: var(--muted); font-size: 0.85rem;">
+                                            <i class="bi bi-geo-alt me-2" style="color: var(--primary);"></i>
+                                            {{ admin.adresse|truncatechars:60 }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 20px;">
+                                <span style="background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(26, 115, 232, 0.2)); color: var(--text); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center;">
+                                    <i class="bi bi-geo-alt me-2" style="color: var(--primary);"></i>
+                                    {{ admin.ville }}
+                                </span>
+                            </td>
+                            <td style="padding: 20px;">
+                                {% if admin.type_administration == 'ministere' %}
+                                <span style="background: linear-gradient(135deg, rgba(27, 179, 94, 0.1), rgba(27, 179, 94, 0.2)); color: var(--success); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; border: 1px solid rgba(27, 179, 94, 0.3);">
+                                    <i class="bi bi-building me-2"></i>
+                                    {{ admin.get_type_administration_display }}
+                                </span>
+                                {% elif admin.type_administration == 'agence' %}
+                                <span style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.2)); color: var(--primary); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                    <i class="bi bi-people me-2"></i>
+                                    {{ admin.get_type_administration_display }}
+                                </span>
+                                {% elif admin.type_administration == 'collectivite' %}
+                                <span style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.2)); color: #ffc107; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; border: 1px solid rgba(255, 193, 7, 0.3);">
+                                    <i class="bi bi-building me-2"></i>
+                                    {{ admin.get_type_administration_display }}
+                                </span>
+                                {% elif admin.type_administration == 'etablissement' %}
+                                <span style="background: linear-gradient(135deg, rgba(143, 167, 166, 0.1), rgba(229, 53, 185, 0.2)); color: var(--muted); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; border: 1px solid rgba(53, 203, 229, 0.3);">
+                                    <i class="bi bi-building me-2"></i>
+                                    {{ admin.get_type_administration_display }}
+                                </span>
+                                {% else %}
+                                <span style="background: linear-gradient(135deg, rgba(107, 114, 128, 0.1), rgba(107, 114, 128, 0.2)); color: var(--muted); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; border: 1px solid rgba(107, 114, 128, 0.3);">
+                                    <i class="bi bi-three-dots me-2"></i>
+                                    {{ admin.get_type_administration_display }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 20px; text-align: center;">
+                                <div style="display: flex; gap: 8px; justify-content: center;">
+                                    <a href="{% url 'modifier_administration' admin.id_administration %}" 
+                                       style="background: var(--card-bg); color: var(--primary); border: 1px solid var(--primary); padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;">
+                                        <i class="bi bi-pencil me-2"></i> Modifier
+                                    </a>
+                                    <a href="{% url 'supprimer_administration' admin.id_administration %}" 
+                                       style="background: var(--card-bg); color: var(--danger); border: 1px solid var(--danger); padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette administration ? Cette action est irréversible.');">
+                                        <i class="bi bi-trash me-2"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 60px 20px;">
+                                <div>
+                                    <i class="bi bi-building fa-4x mb-4" style="color: var(--muted); opacity: 0.3; font-size: 3rem;"></i>
+                                    <h4 style="color: var(--text); margin-bottom: 16px; font-weight: 600;">Aucune administration enregistrée</h4>
+                                    <p style="color: var(--muted); margin-bottom: 24px; font-size: 0.95rem;">Commencez par ajouter une nouvelle administration</p>
+                                    <a href="{% url 'creer_administration' %}" 
+                                       style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);">
+                                        <i class="bi bi-plus-circle me-2"></i>Ajouter une administration
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        {% if administrations %}
+        <div style="padding: 20px 25px; border-top: 1px solid rgba(148, 163, 184, 0.1);">
+            <div class="d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: var(--muted); font-size: 0.9rem;">
+                    Affichage de <strong>{{ administrations|length }}</strong> administration{{ administrations|length|pluralize:"s" }}
+                </div>
+                <nav aria-label="Navigation">
+                    <ul style="display: flex; list-style: none; margin: 0; padding: 0; gap: 8px;">
+                        <li>
+                            <a style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: var(--card-bg); color: var(--muted); text-decoration: none; border: 1px solid rgba(148, 163, 184, 0.2);">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: var(--primary); color: white; text-decoration: none; border: 1px solid var(--primary); font-weight: 500;">
+                                1
+                            </a>
+                        </li>
+                        <li>
+                            <a style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: var(--card-bg); color: var(--muted); text-decoration: none; border: 1px solid rgba(148, 163, 184, 0.2);">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript pour la recherche -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+    
+    // Effet hover sur les boutons d'action
+    document.querySelectorAll('a[href*="modifier_administration"]').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.background = 'var(--primary)';
+            this.style.color = 'white';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.background = 'var(--card-bg)';
+            this.style.color = 'var(--primary)';
+        });
+    });
+    
+    document.querySelectorAll('a[href*="supprimer_administration"]').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.background = 'var(--danger)';
+            this.style.color = 'white';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.background = 'var(--card-bg)';
+            this.style.color = 'var(--danger)';
+        });
+    });
+    
+    // Effet hover sur les lignes du tableau
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(148, 163, 184, 0.05)';
+        });
+        row.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
+    });
+});
+</script>
+
+<style>
+    /* Styles pour les badges de type */
+    span[style*="background: linear-gradient"] {
+        transition: all 0.2s ease;
+    }
+    
+    span[style*="background: linear-gradient"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Style pour la pagination */
+    nav ul li a:hover {
+        background: var(--primary-light) !important;
+        color: var(--primary) !important;
+        border-color: var(--primary) !important;
+    }
+    
+    /* Style pour les cartes de statistiques en mode sombre */
+    .dark-mode .stat-card {
+        border-color: rgba(148, 163, 184, 0.2) !important;
+    }
+    
+    /* Animation pour les messages */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .alert {
+        animation: slideIn 0.3s ease-out;
+    }
+</style>
+{% endblock %}

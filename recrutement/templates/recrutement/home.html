@@ -1,0 +1,1026 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">MADA JOB-INCLICK</h1>
+            <p class="hero-subtitle">
+                Plateforme numérique pour tous les recrutements dans la fonction publique.
+            </p>
+            <p class="hero-description">
+                Mise en réseau avec les administrations et les candidats pour un recrutement transparent et efficace.
+            </p>
+            
+            <div class="hero-rating">
+                <div class="rating-badge">
+                    <span class="rating-value">4,9</span>
+                    <div class="stars">
+                        {% for i in "12345" %}
+                        <i class="bi bi-star-fill"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                <span class="rating-text">189 avis positifs</span>
+            </div>
+            
+            <div class="hero-buttons">
+                <a href="{% url 'liste_offres' %}" class="btn-primary btn-large">
+                    <i class="bi bi-search"></i>
+                    Trouver une offre
+                </a>
+                <a href="{% static 'files/guide.pdf' %}" download class="btn-outline btn-large" style="color: var(--primary); border-color: var(--primary);">
+                    <i class="bi bi-download"></i>
+                    Télécharger le guide
+                </a>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <img src="{% static 'images/home.PNG' %}" 
+                alt="Illustration recrutement" 
+                class="hero-img"
+                width="450">
+        </div>
+    </div>
+</div>
+
+
+<!-- Statistics Section -->
+<div class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ total_offres }}+</div>
+            <div class="stat-label">Offres actives</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ nombre_administrations }}+</div>
+            <div class="stat-label">Administrations</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">Tous</div>
+            <div class="stat-label">Niveaux de grade</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">24h</div>
+            <div class="stat-label">Support rapide</div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">Fonctionnalités</h2>
+        <p class="section-subtitle">
+            Une plateforme conçue pour simplifier le recrutement public, avec des outils modernes et efficaces.
+        </p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <h3 class="feature-title">Recherche Intelligente</h3>
+            <p class="feature-description">
+                Trouvez rapidement les offres qui correspondent à votre profil grâce à notre moteur de recherche avancé.
+            </p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-clock"></i>
+            </div>
+            <h3 class="feature-title">Suivi en Temps Réel</h3>
+            <p class="feature-description">
+                Suivez l'évolution de vos candidatures en temps réel avec des notifications instantanées.
+            </p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3 class="feature-title">Sécurité des Données</h3>
+            <p class="feature-description">
+                Vos données personnelles sont protégées et sécurisées conformément aux normes RGPD.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Advantages Section -->
+<div class="advantages-section">
+    <div class="advantages-content">
+        <div class="advantages-text">
+            <h2 class="advantages-title">Avantages de notre plateforme</h2>
+            
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="advantage-content">
+                    <h3 class="advantage-title">Processus Simplifié</h3>
+                    <p class="advantage-description">
+                        Déposez votre candidature en quelques clics, sans paperasse ni déplacement.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="advantage-content">
+                    <h3 class="advantage-title">Transparence Totale</h3>
+                    <p class="advantage-description">
+                        Suivez chaque étape de votre candidature avec un tableau de bord détaillé.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="advantage-item">
+                <div class="advantage-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="advantage-content">
+                    <h3 class="advantage-title">Support Personnalisé</h3>
+                    <p class="advantage-description">
+                        Une équipe dédiée pour vous accompagner tout au long du processus.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="advantages-image">
+            <img src="{% static 'images/image1.jpg' %}" 
+                alt="Illustration avantages" 
+                class="advantages-img"
+                width="450">
+        </div>
+    </div>
+</div>
+
+<!-- Recent Offers Section -->
+<div class="section">
+    <div class="section-header with-action">
+        <div>
+            <h2 class="section-title">Dernières offres</h2>
+            <p class="section-subtitle">Découvrez les opportunités récentes</p>
+        </div>
+        <a href="{% url 'liste_offres' %}" class="btn-primary">
+            Voir toutes <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    
+    {% if offres_recentes %}
+    <div class="offers-grid">
+        {% for offre in offres_recentes %}
+        <div class="offer-card">
+            <div class="offer-header">
+                <div class="offer-badge">{{ offre.administration.nom }}</div>
+                <div class="offer-date">{{ offre.date_publication|date:"d/m/Y" }}</div>
+            </div>
+            
+            <h3 class="offer-title">{{ offre.titre }}</h3>
+            
+            <p class="offer-description">
+                {{ offre.description|truncatewords:20 }}
+            </p>
+            
+            <div class="offer-footer">
+                <div class="offer-deadline">
+                    <i class="bi bi-clock"></i>
+                    {{ offre.date_limite|date:"d/m/Y" }}
+                </div>
+                <a href="{% url 'detail_offre' offre.pk %}" class="offer-button">
+                    Postuler
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <h3>Aucune offre disponible pour le moment</h3>
+        <p>Revenez bientôt pour découvrir de nouvelles opportunités</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Testimonials Section -->
+<div class="testimonials-section">
+    <div class="section-header">
+        <h2 class="section-title">Témoignages</h2>
+        <p class="section-subtitle">Ce que disent nos utilisateurs</p>
+    </div>
+    
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="testimonial-header">
+                <div class="testimonial-avatar" style="background-color: #00B4D8;"></div>
+                <div class="testimonial-info">
+                    <h4>M. Dabyane</h4>
+                    <p>Candidat - Administrateur</p>
+                </div>
+            </div>
+            
+            <div class="testimonial-rating">
+                {% for i in "12345" %}
+                <i class="bi bi-star-fill"></i>
+                {% endfor %}
+            </div>
+            
+            <p class="testimonial-text">
+                "Grâce à cette plateforme, j'ai trouvé mon poste en administration en moins d'un mois. Le processus est transparent et efficace."
+            </p>
+        </div>
+        
+        <div class="testimonial-card">
+            <div class="testimonial-header">
+                <div class="testimonial-avatar" style="background-color: #0077B6;"></div>
+                <div class="testimonial-info">
+                    <h4>C. Lagrich</h4>
+                    <p>Responsable RH</p>
+                </div>
+            </div>
+            
+            <div class="testimonial-rating">
+                {% for i in "12345" %}
+                <i class="bi bi-star-fill"></i>
+                {% endfor %}
+            </div>
+            
+            <p class="testimonial-text">
+                "Une plateforme indispensable pour le recrutement public. Nous avons réduit nos délais de recrutement de 40%."
+            </p>
+        </div>
+        
+        <div class="testimonial-card">
+            <div class="testimonial-header">
+                <div class="testimonial-avatar" style="background-color: #FF9E00;"></div>
+                <div class="testimonial-info">
+                    <h4>FZ. EL Abid</h4>
+                    <p>Juriste Publique</p>
+                </div>
+            </div>
+            
+            <div class="testimonial-rating">
+                {% for i in "12345" %}
+                <i class="bi bi-star-fill"></i>
+                {% endfor %}
+            </div>
+            
+            <p class="testimonial-text">
+                "Interface intuitive et support réactif. J'ai pu postuler à plusieurs offres sans difficulté technique."
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero Section - Version avec fond blanc */
+    .hero-section {
+        background: rgba(73, 94, 234, 0.136);
+        border-radius: 0 0 40px 40px;
+        padding: 60px 5vw 80px;
+        margin: -32px -5vw 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .hero-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hero-text {
+        color: var(--text);
+    }
+
+    .hero-title {
+        font-size: 48px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--primary);
+    }
+
+    .hero-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        color: var(--muted);
+    }
+
+    .hero-rating {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .rating-badge {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 20px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(2, 62, 138, 0.2);
+    }
+
+    .rating-value {
+        font-size: 18px;
+    }
+
+    .stars {
+        display: flex;
+        gap: 2px;
+    }
+
+    .stars i {
+        color: #FFD700;
+        font-size: 14px;
+    }
+
+    .rating-text {
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .btn-large {
+        padding: 16px 32px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .btn-black {
+        color: var(--text) !important;
+        border-color: var(--text) !important;
+    }
+
+    .btn-black:hover {
+        color: var(--card-bg) !important;
+        background-color: var(--text) !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-outline {
+        background: rgba(3, 65, 250, 0.367);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-outline:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .hero-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        
+        .hero-image {
+            order: -1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 40px 5vw 60px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .hero-title {
+            font-size: 36px;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-large {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 28px;
+        }
+        
+        .hero-rating {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+    }
+    /* Statistics Section */
+    .stats-section {
+        padding: 60px 5vw;
+        background: var(--bg);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 32px 24px;
+        text-align: center;
+        border: 2px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+    }
+
+    .stat-value {
+        font-size: 48px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 16px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* Section Styles */
+    .section {
+        padding: 80px 5vw;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-header.with-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 40px 32px;
+        border: 2px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+
+    .feature-icon i {
+        font-size: 28px;
+        color: white;
+    }
+
+    .feature-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .feature-description {
+        color: var(--text);
+        line-height: 1.6;
+        opacity: 0.9;
+    }
+
+    /* Advantages Section */
+    .advantages-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 80px 5vw;
+        border-radius: 40px;
+        margin: 0 auto 80px;
+        max-width: 1200px;
+    }
+
+    .advantages-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .advantages-text {
+        color: white;
+    }
+
+    .advantages-title {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 40px;
+        line-height: 1.2;
+    }
+
+    .advantage-item {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 32px;
+        transition: transform 0.3s ease;
+    }
+
+    .advantage-item:hover {
+        transform: translateX(10px);
+    }
+
+    .advantage-icon i {
+        font-size: 24px;
+        color: #FF9E00;
+    }
+
+    .advantage-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .advantage-description {
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+
+    .advantages-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .advantages-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Offers Grid */
+    .offers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 32px;
+    }
+
+    .offer-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        box-shadow: var(--shadow-soft);
+        transition: all 0.3s ease;
+    }
+
+    .offer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+        border-color: var(--primary);
+    }
+
+    .offer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .offer-badge {
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .offer-date {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .offer-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+
+    .offer-description {
+        color: var(--text);
+        line-height: 1.6;
+        margin-bottom: 24px;
+        opacity: 0.9;
+    }
+
+    .offer-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .offer-deadline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #FF9E00;
+        font-weight: 600;
+    }
+
+    .offer-button {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 10px 24px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        text-decoration: none;
+    }
+
+    .offer-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 2px dashed rgba(148, 163, 184, 0.3);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--primary-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+    }
+
+    .empty-icon i {
+        font-size: 32px;
+        color: var(--primary);
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+        color: var(--text);
+        margin-bottom: 12px;
+    }
+
+    .empty-state p {
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 80px 5vw;
+        background: var(--bg);
+        border-radius: 40px;
+        margin: 0 auto;
+        max-width: 1200px;
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+    }
+
+    .testimonial-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .testimonial-info h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+    }
+
+    .testimonial-info p {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .testimonial-rating {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 20px;
+    }
+
+    .testimonial-rating i {
+        color: #FF9E00;
+        font-size: 14px;
+    }
+
+    .testimonial-text {
+        color: var(--text);
+        line-height: 1.6;
+        font-style: italic;
+        opacity: 0.9;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+        text-decoration: none;
+    }
+
+    .btn-outline:hover {
+        background: white;
+        color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-content,
+        .advantages-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        
+        .hero-image {
+            order: -1;
+        }
+        
+        .advantages-image {
+            order: -1;
+        }
+        
+        .section-header.with-action {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 40px 5vw 60px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .hero-title {
+            font-size: 36px;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+        }
+        
+        .section {
+            padding: 60px 5vw;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-large {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .offers-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 28px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .testimonials-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

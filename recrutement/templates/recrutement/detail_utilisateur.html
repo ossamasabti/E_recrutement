@@ -1,0 +1,1307 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Fiche utilisateur - {{ user_detail.username }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Conteneur principal */
+    .user-detail-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* En-tête */
+    .user-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: linear-gradient(135deg, #023E8A 0%, #3d3d83 100%);
+        padding: 25px 30px;
+        border-radius: 18px;
+        color: white;
+        box-shadow: 0 12px 30px rgba(2, 62, 138, 0.2);
+    }
+
+    .user-header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .user-avatar-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #023E8A, #3d3d83);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 32px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-info-main h1 {
+        margin: 0;
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-info-main h1 i {
+        font-size: 24px;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .user-subtitle {
+        margin: 5px 0 0;
+        opacity: 0.9;
+        font-size: 16px;
+    }
+
+    .user-header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-back, .btn-edit {
+        padding: 12px 24px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-edit {
+        background: white;
+        color: #023E8A;
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-back:hover, .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(2, 62, 138, 0.3);
+    }
+
+    /* Grille principale */
+    .user-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 992px) {
+        .user-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Sidebar */
+    .user-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    /* Cartes */
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #E3F2FD;
+    }
+
+    .card-header h3 {
+        margin: 0;
+        color: #1F2933;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .card-header i {
+        color: #023E8A;
+        font-size: 20px;
+    }
+
+    /* Permissions section */
+    .permissions-form {
+        margin-top: 20px;
+    }
+
+    .permission-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 0;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .permission-item:last-child {
+        border-bottom: none;
+    }
+
+    .permission-label {
+        color: #1F2933;
+        font-size: 14px;
+        cursor: pointer;
+        flex-grow: 1;
+    }
+
+    .permission-description {
+        color: #6B7280;
+        font-size: 12px;
+        margin-top: 2px;
+    }
+
+    /* Custom checkbox */
+    .custom-checkbox {
+        position: relative;
+        width: 20px;
+        height: 20px;
+    }
+
+    .custom-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #fff;
+        border: 2px solid #E2E8F0;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .custom-checkbox input:checked ~ .checkmark {
+        background-color: #023E8A;
+        border-color: #023E8A;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .custom-checkbox input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .custom-checkbox .checkmark:after {
+        left: 6px;
+        top: 2px;
+        width: 6px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Boutons du formulaire */
+    .permissions-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .btn-save, .btn-cancel {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #023E8A, #3d3d83);
+        color: white;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(2, 62, 138, 0.3);
+    }
+
+    .btn-cancel {
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #E2E8F0;
+    }
+
+    .btn-cancel:hover {
+        background: #E2E8F0;
+    }
+
+    .edit-mode .btn-cancel {
+        display: flex;
+    }
+
+    .edit-mode .btn-save {
+        display: flex;
+    }
+
+    /* Statuts et badges */
+    .user-status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .status-item {
+        text-align: center;
+        padding: 15px;
+        border-radius: 10px;
+        background: #F8FAFC;
+        transition: all 0.2s;
+    }
+
+    .status-item:hover {
+        background: #F1F5F9;
+    }
+
+    .status-label {
+        font-size: 12px;
+        color: #6B7280;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1F2933;
+    }
+
+    .status-value.status-active {
+        color: #1BB35E;
+    }
+
+    .status-value.status-inactive {
+        color: #E53935;
+    }
+
+    .status-value.status-superuser {
+        color: #DC2626;
+    }
+
+    .status-value.status-staff {
+        color: #F59E0B;
+    }
+
+    /* Badges */
+    .badge-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .info-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-primary {
+        background: #E3F2FD;
+        color: #023E8A;
+    }
+
+    .badge-success {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .badge-warning {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .badge-danger {
+        background: #FEE2E2;
+        color: #B91C1C;
+    }
+
+    /* Liste d'informations */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: #6B7280;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-label i {
+        color: #023E8A;
+        width: 16px;
+    }
+
+    .info-value {
+        color: #1F2933;
+        font-weight: 500;
+        text-align: right;
+    }
+
+    /* Boutons d'action */
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        padding: 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .action-btn.email {
+        background: #E3F2FD;
+        color: #023E8A;
+    }
+
+    .action-btn.copy {
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #E2E8F0;
+    }
+
+    .action-btn.download {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .action-btn.view {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Contenu principal */
+    .user-main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    /* Onglets */
+    .user-tabs {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        overflow: hidden;
+    }
+
+    .tabs-header {
+        display: flex;
+        border-bottom: 1px solid #E2E8F0;
+        background: #F8FAFC;
+    }
+
+    .tab-btn {
+        padding: 18px 24px;
+        border: none;
+        background: none;
+        font-size: 15px;
+        font-weight: 500;
+        color: #6B7280;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .tab-btn:hover {
+        color: #023E8A;
+        background: rgba(227, 242, 253, 0.3);
+    }
+
+    .tab-btn.active {
+        color: #023E8A;
+        background: white;
+    }
+
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #023E8A, #3d3d83);
+    }
+
+    .tab-badge {
+        background: rgba(2, 62, 138, 0.1);
+        color: #023E8A;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .tab-content {
+        padding: 30px;
+    }
+
+    /* Contenu des onglets */
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section profil */
+    .profile-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .profile-block {
+        background: #F8FAFC;
+        border-radius: 12px;
+        padding: 25px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .profile-block h4 {
+        margin: 0 0 20px 0;
+        color: #1F2933;
+        font-size: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .profile-block h4 i {
+        color: #023E8A;
+    }
+
+    /* Tableau des candidatures */
+    .applications-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .applications-table thead {
+        background: #F8FAFC;
+    }
+
+    .applications-table th {
+        padding: 16px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #475569;
+        border-bottom: 2px solid #E2E8F0;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .applications-table td {
+        padding: 20px;
+        border-bottom: 1px solid #E2E8F0;
+        vertical-align: middle;
+    }
+
+    .applications-table tbody tr {
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .applications-table tbody tr:hover {
+        background: #F8FAFC;
+    }
+
+    .offer-title {
+        font-weight: 500;
+        color: #1F2933;
+        margin-bottom: 4px;
+    }
+
+    .offer-org {
+        font-size: 13px;
+        color: #6B7280;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Statistiques */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        color: #023E8A;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: #6B7280;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Section documents vide */
+    .empty-section {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #F1F5F9;
+        color: #6B7280;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 32px;
+    }
+
+    .empty-section h4 {
+        margin: 0 0 10px;
+        color: #1F2933;
+        font-size: 18px;
+    }
+
+    .empty-section p {
+        color: #6B7280;
+        margin-bottom: 20px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .user-header {
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .user-header-left {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .user-header-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .user-status-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs-header {
+            flex-direction: column;
+        }
+
+        .tab-btn {
+            justify-content: center;
+        }
+
+        .profile-section {
+            grid-template-columns: 1fr;
+        }
+
+        .applications-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .permissions-actions {
+            flex-direction: column;
+        }
+
+        .btn-save, .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="user-detail-container">
+    <!-- En-tête -->
+    <div class="user-header">
+        <div class="user-header-left">
+            <div class="user-avatar-large">
+                {{ user_detail.first_name|first|upper }}{{ user_detail.last_name|first|upper }}
+            </div>
+            <div class="user-info-main">
+                <h1><i class="bi bi-person-badge"></i>{{ user_detail.username }}</h1>
+                <p class="user-subtitle">{{ user_detail.get_full_name|default:"Nom complet non renseigné" }}</p>
+                <p class="user-subtitle"><i class="bi bi-envelope"></i> {{ user_detail.email }}</p>
+            </div>
+        </div>
+        <div class="user-header-actions">
+            <a href="{% url 'gestion_utilisateurs' %}" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+            <button class="btn-edit" onclick="toggleEditMode()">
+                <i class="bi bi-pencil"></i> Éditer
+            </button>
+        </div>
+    </div>
+
+    <div class="user-grid">
+        <!-- Sidebar -->
+        <div class="user-sidebar">
+            <!-- Carte statut -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-shield-check"></i>
+                    <h3>Statut et rôles</h3>
+                </div>
+                
+                <!-- Vue normale (lecture seule) -->
+                <div class="view-mode">
+                    <div class="user-status-grid">
+                        <div class="status-item">
+                            <div class="status-label">Statut</div>
+                            <div class="status-value {{ user_detail.is_active|yesno:'status-active,status-inactive' }}">
+                                <i class="bi bi-circle-fill" style="font-size: 8px;"></i>
+                                {{ user_detail.is_active|yesno:'Actif,Inactif' }}
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Type</div>
+                            <div class="status-value 
+                                {% if user_detail.is_superuser %}status-superuser
+                                {% elif user_detail.is_staff %}status-staff
+                                {% else %}status-primary{% endif %}">
+                                {% if user_detail.is_superuser %}
+                                    Super Admin
+                                {% elif user_detail.is_staff %}
+                                    Staff
+                                {% else %}
+                                    Utilisateur
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-container">
+                        <span class="info-badge badge-primary">
+                            <i class="bi bi-person-badge"></i> {{ profile.get_role_display }}
+                        </span>
+                        <span class="info-badge 
+                            {% if user_detail.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                            <i class="bi bi-circle-fill" style="font-size: 8px;"></i>
+                            {{ user_detail.is_active|yesno:'Compte actif,Compte inactif' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Formulaire d'édition (caché par défaut) -->
+                <div class="edit-mode" style="display: none;">
+                    <form method="post" action="{% url 'update_user_permissions' user_detail.id %}" id="permissionsForm">
+                        {% csrf_token %}
+                        <div class="permissions-form">
+                            <div class="permission-item">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="is_active" {% if user_detail.is_active %}checked{% endif %}>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div>
+                                    <div class="permission-label">Active</div>
+                                    <div class="permission-description">
+                                        Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="is_staff" {% if user_detail.is_staff %}checked{% endif %}>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div>
+                                    <div class="permission-label">Staff status</div>
+                                    <div class="permission-description">
+                                        Designates whether the user can log into this admin site.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="permission-item">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="is_superuser" {% if user_detail.is_superuser %}checked{% endif %}>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div>
+                                    <div class="permission-label">Superuser status</div>
+                                    <div class="permission-description">
+                                        Designates that this user has all permissions without explicitly assigning them.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="permissions-actions">
+                                <button type="button" class="btn-cancel" onclick="toggleEditMode()">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </button>
+                                <button type="submit" class="btn-save">
+                                    <i class="bi bi-check-circle"></i> Enregistrer
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Carte informations système -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-cpu"></i>
+                    <h3>Informations système</h3>
+                </div>
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-calendar-plus"></i>
+                            Inscription
+                        </div>
+                        <div class="info-value">{{ user_detail.date_joined|date:"d/m/Y" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-clock-history"></i>
+                            Dernière connexion
+                        </div>
+                        <div class="info-value">
+                            {{ user_detail.last_login|date:"d/m/Y H:i"|default:"Jamais" }}
+                            {% if user_detail.last_login %}
+                                <br><small class="text-muted">({{ last_activity }})</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <i class="bi bi-calendar-heart"></i>
+                            Ancienneté
+                        </div>
+                        <div class="info-value">{{ jours_inscription }} jour{{ jours_inscription|pluralize }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte actions rapides -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i>
+                    <h3>Actions rapides</h3>
+                </div>
+                <div class="action-buttons">
+                    <a href="mailto:{{ user_detail.email }}" class="action-btn email">
+                        <i class="bi bi-envelope"></i> Email
+                    </a>
+                    <button onclick="copyToClipboard('{{ user_detail.email }}')" class="action-btn copy">
+                        <i class="bi bi-clipboard"></i> Copier
+                    </button>
+                    {% if profile.cv_default %}
+                    <a href="{{ profile.cv_default.url }}" download class="action-btn download">
+                        <i class="bi bi-download"></i> Télécharger CV
+                    </a>
+                    <a href="{{ profile.cv_default.url }}" target="_blank" class="action-btn view">
+                        <i class="bi bi-eye"></i> Voir CV
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="user-main-content">
+            <!-- Onglets -->
+            <div class="user-tabs">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="profile">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Profil détaillé</span>
+                    </button>
+                    <button class="tab-btn" data-tab="applications">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Candidatures</span>
+                        {% if stats_candidatures.total > 0 %}
+                        <span class="tab-badge">{{ stats_candidatures.total }}</span>
+                        {% endif %}
+                    </button>
+                    <button class="tab-btn" data-tab="documents">
+                        <i class="bi bi-folder"></i>
+                        <span>Documents</span>
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Onglet Profil -->
+                    <div id="profile-tab" class="tab-pane active">
+                        <div class="profile-section">
+                            <div class="profile-block">
+                                <h4><i class="bi bi-person-vcard"></i> Informations personnelles</h4>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <div class="info-label">Téléphone</div>
+                                        <div class="info-value">{{ profile.phone|default:"Non renseigné" }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Profession</div>
+                                        <div class="info-value">{{ profile.profession|default:"Non renseignée" }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Expérience</div>
+                                        <div class="info-value">
+                                            {{ profile.experience|default:0 }} an{{ profile.experience|pluralize:"s"|default:"" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-block">
+                                <h4><i class="bi bi-mortarboard"></i> Formation & Contact</h4>
+                                <div class="info-list">
+                                    <div class="info-item">
+                                        <div class="info-label">Niveau d'étude</div>
+                                        <div class="info-value">{{ profile.get_niveau_etude_display|default:"Non renseigné" }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Adresse</div>
+                                        <div class="info-value">
+                                            {% if profile.address %}
+                                                {{ profile.address }}
+                                                {% if profile.postal_code %}<br>{{ profile.postal_code }} {{ profile.city }}{% endif %}
+                                            {% else %}
+                                                Non renseignée
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Curriculum Vitae</div>
+                                        <div class="info-value">
+                                            {% if profile.cv_default %}
+                                                <span class="badge-success">CV disponible</span>
+                                            {% else %}
+                                                <span class="text-muted">Aucun CV</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Candidatures -->
+                    <div id="applications-tab" class="tab-pane">
+                        {% if stats_candidatures.total > 0 %}
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ stats_candidatures.total }}</div>
+                                <div class="stat-label">Total</div>
+                            </div>
+                            <div class="stat-card" style="border-left: 4px solid #1A73E8;">
+                                <div class="stat-number" style="color: #1A73E8;">{{ stats_candidatures.deposees }}</div>
+                                <div class="stat-label">Déposées</div>
+                            </div>
+                            <div class="stat-card" style="border-left: 4px solid #F59E0B;">
+                                <div class="stat-number" style="color: #F59E0B;">{{ stats_candidatures.en_revue }}</div>
+                                <div class="stat-label">En revue</div>
+                            </div>
+                            <div class="stat-card" style="border-left: 4px solid #1BB35E;">
+                                <div class="stat-number" style="color: #1BB35E;">{{ stats_candidatures.retenues }}</div>
+                                <div class="stat-label">Retenues</div>
+                            </div>
+                            <div class="stat-card" style="border-left: 4px solid #E53935;">
+                                <div class="stat-number" style="color: #E53935;">{{ stats_candidatures.rejetees }}</div>
+                                <div class="stat-label">Rejetées</div>
+                            </div>
+                            <div class="stat-card" style="border-left: 4px solid #1F2933;">
+                                <div class="stat-number" style="color: #1F2933;">{{ stats_candidatures.embauches }}</div>
+                                <div class="stat-label">Embauches</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if candidatures %}
+                        <div class="table-responsive">
+                            <table class="applications-table">
+                                <thead>
+                                    <tr>
+                                        <th>Offre d'emploi</th>
+                                        <th>Date de candidature</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for candidature in candidatures %}
+                                       <td>
+                                            <div class="offer-title">{{ candidature.offre.titre|truncatechars:60 }}</div>
+                                            {% if candidature.offre.administration %}
+                                            <div class="offer-org">
+                                                <i class="bi bi-building"></i>
+                                                {{ candidature.offre.administration.nom }}
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ candidature.date_depot|date:"d/m/Y" }}
+                                            <br>
+                                            <small class="text-muted">{{ candidature.date_depot|timesince }}</small>
+                                        </td>
+                                        <td>
+                                            {% with status=candidature.statut %}
+                                            {% if status == 'deposee' %}
+                                            
+                                            {% elif status == 'en_revue' %}
+                                            <span class="info-badge badge-warning">
+                                                {{ candidature.get_statut_display }}
+                                            </span>
+                                            {% elif status == 'retenue' %}
+                                            <span class="info-badge badge-success">
+                                                {{ candidature.get_statut_display }}
+                                            </span>
+                                            {% elif status == 'rejetee' %}
+                                            <span class="info-badge badge-danger">
+                                                {{ candidature.get_statut_display }}
+                                            </span>
+                                            {% elif status == 'embauche' %}
+                                            <span style="background: #1F2933; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                                {{ candidature.get_statut_display }}
+                                            </span>
+                                            {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-section">
+                            <div class="empty-icon">
+                                <i class="bi bi-file-earmark-x"></i>
+                            </div>
+                            <h4>Aucune candidature</h4>
+                            <p>Cet utilisateur n'a pas encore postulé à des offres d'emploi.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Onglet Documents -->
+                    <div id="documents-tab" class="tab-pane">
+                        <div class="empty-section">
+                            <div class="empty-icon">
+                                <i class="bi bi-folder2-open"></i>
+                            </div>
+                            <h4>Section documents</h4>
+                            <p>Cette fonctionnalité est actuellement en cours de développement.</p>
+                            <div style="background: #E3F2FD; color: #023E8A; padding: 12px 20px; border-radius: 10px; display: inline-flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Bientôt disponible</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Gestion du mode édition
+let isEditMode = false;
+
+function toggleEditMode() {
+    isEditMode = !isEditMode;
+    
+    const viewMode = document.querySelector('.view-mode');
+    const editMode = document.querySelector('.edit-mode');
+    const editButton = document.querySelector('.btn-edit');
+    
+    if (isEditMode) {
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+        editButton.innerHTML = '<i class="bi bi-eye"></i> Voir';
+        editButton.style.background = '#F1F5F9';
+        editButton.style.color = '#475569';
+    } else {
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+        editButton.innerHTML = '<i class="bi bi-pencil"></i> Éditer';
+        editButton.style.background = 'white';
+        editButton.style.color = '#023E8A';
+    }
+}
+
+// Gestion des onglets
+function switchTab(tabName) {
+    // Désactiver tous les onglets
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.remove('active');
+    });
+    
+    // Activer l'onglet sélectionné
+    document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+// Initialiser les onglets
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tabName = btn.getAttribute('data-tab');
+        switchTab(tabName);
+    });
+});
+
+// Soumission du formulaire de permissions
+document.getElementById('permissionsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Permissions mises à jour avec succès', 'success');
+            // Recharger la page pour afficher les nouvelles valeurs
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        } else {
+            showToast('Erreur lors de la mise à jour', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Erreur lors de la mise à jour', 'error');
+    });
+});
+
+// Copier dans le presse-papier
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Email copié dans le presse-papier', 'success');
+    }).catch(err => {
+        console.error('Erreur de copie :', err);
+        showToast('Erreur lors de la copie', 'error');
+    });
+}
+
+// Toast notifications
+function showToast(message, type = 'success') {
+    // Créer le toast
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 15px 25px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 10001;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s;
+    `;
+    
+    if (type === 'success') {
+        toast.style.background = 'linear-gradient(135deg, #1BB35E, #10B981)';
+        toast.innerHTML = `<i class="bi bi-check-circle"></i> ${message}`;
+    } else {
+        toast.style.background = 'linear-gradient(135deg, #E53935, #DC2626)';
+        toast.innerHTML = `<i class="bi bi-x-circle"></i> ${message}`;
+    }
+    
+    document.body.appendChild(toast);
+    
+    // Animation d'entrée
+    setTimeout(() => {
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+    }, 10);
+    
+    // Auto-remove après 4 secondes
+    setTimeout(() => {
+        toast.style.transform = 'translateY(100px)';
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 4000);
+}
+
+// Animation des cartes
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des cartes de la sidebar
+    const cards = document.querySelectorAll('.info-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Animation des lignes du tableau
+    const tableRows = document.querySelectorAll('.applications-table tbody tr');
+    tableRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateX(0)';
+        }, 300 + (index * 50));
+    });
+    
+    // Initialiser le premier onglet
+    switchTab('profile');
+});
+</script>
+{% endblock %}

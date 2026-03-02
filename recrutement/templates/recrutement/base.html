@@ -1,0 +1,975 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MADA JOBINCLICK - Plateforme de recrutement public{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.ico' %}">
+    <link rel="shortcut icon" href="{% static 'logo.ico' %}" type="image/x-icon">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- CSS global -->
+    <style>
+        :root {
+            --primary: #1A73E8;
+            --primary-light: #E3F2FD;
+            --primary-dark: #0F4AB8;
+            --primary-rgb: 26, 115, 232;
+            --bg: #F5F7FB;
+            --text: #1F2933;
+            --muted: #6B7280;
+            --card-bg: #FFFFFF;
+            --danger: #E53935;
+            --success: #1BB35E;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+            --nav-bg: #FFFFFF;
+            --footer-bg: linear-gradient(135deg, #023E8A 0%, #3d3d83 100%);
+        }
+
+        /* Mode sombre */
+        .dark-mode {
+            --primary: #3B82F6;
+            --primary-light: #1E293B;
+            --primary-dark: #60A5FA;
+            --primary-rgb: 59, 130, 246;
+            --bg: #0F172A;
+            --text: #F1F5F9;
+            --muted: #94A3B8;
+            --card-bg: #1E293B;
+            --danger: #EF4444;
+            --success: #10B981;
+            --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.3);
+            --nav-bg: #1E293B;
+            --footer-bg: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, var(--primary-light) 0, var(--bg) 45%, var(--card-bg) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .no-scale,
+        .no-scale:active,
+        .no-scale:focus,
+        .no-scale:hover {
+            transform: none !important;
+            scale: 1 !important;
+            transition: none !important;
+        }
+        
+        .no-scale:active {
+            padding: initial !important;
+            margin: initial !important;
+        }
+
+        .btn:active,
+        .btn:focus,
+        .nav-link:active,
+        .nav-link:focus {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 5vw;
+            background: var(--nav-bg);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-logo-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-title {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .navbar-title a {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .navbar-title-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .nav-link {
+            padding: 8px 14px;
+            border-radius: 999px;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-link-active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 10px 22px rgba(2, 62, 138, 0.4);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Notifications dropdown */
+        .nav-item.dropdown {
+            list-style: none;
+            margin: 0;
+        }
+
+        .dropdown-notifications {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item:hover {
+            background-color: rgba(var(--primary-rgb), 0.1);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(var(--primary-rgb), 0.05);
+        }
+
+        /* Animation pour les nouvelles notifications */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        #notification-badge:not(.d-none) {
+            animation: pulse 1s infinite;
+        }
+
+        /* Scrollbar personnalisée */
+        .dropdown-notifications::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dropdown-notifications::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .dropdown-notifications::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        .dropdown-notifications::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Bouton mode sombre/clair */
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-light);
+            transform: rotate(15deg);
+        }
+
+        .theme-toggle .bi-moon-fill {
+            display: none;
+        }
+
+        .dark-mode .theme-toggle .bi-sun-fill {
+            display: none;
+        }
+
+        .dark-mode .theme-toggle .bi-moon-fill {
+            display: block;
+        }
+
+        .btn-outline {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            font-size: 13px;
+            color: var(--primary);
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-primary {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(2, 62, 138, 0.45);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(2, 62, 138, 0.55);
+        }
+
+        /* Layout principal */
+        .page-container {
+            padding: 32px 5vw 48px;
+            min-height: calc(100vh - 64px);
+            flex: 1;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Messages Django */
+        .flash-messages {
+            position: fixed;
+            top: 76px;
+            right: 24px;
+            max-width: 320px;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .flash-message {
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            box-shadow: var(--shadow-soft);
+            background: var(--card-bg);
+            transition: all 0.3s ease;
+        }
+
+        .flash-success {
+            background: var(--success);
+            color: white;
+            border: 1px solid var(--success);
+        }
+
+        .flash-error {
+            background: var(--danger);
+            color: white;
+            border: 1px solid var(--danger);
+        }
+
+        .flash-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            margin-top: 4px;
+            background: white;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--footer-bg);
+            color: white;
+            padding: 30px 5vw 15px;
+            border-top: 3px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .footer-logo-top {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1;
+            color: white;
+        }
+
+        .footer-logo-bottom {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1;
+            color: #e6d9c8;
+            margin-top: 5px;
+        }
+
+        .footer-info {
+            text-align: right;
+            max-width: 600px;
+        }
+
+        .footer-info p {
+            margin: 5px 0;
+        }
+
+        .footer-info i {
+            margin-right: 5px;
+        }
+
+        .footer-separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 20px 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Style pour les cartes d'offres */
+        .offre-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .offre-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(2, 62, 138, 0.15);
+            border-color: var(--primary);
+        }
+
+        .statut-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Formulaires */
+        input, textarea, select {
+            background: var(--card-bg) !important;
+            color: var(--text) !important;
+            border-color: rgba(148, 163, 184, 0.3) !important;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+
+        .table {
+            background: var(--card-bg) !important;
+            color: var(--text) !important;
+        }
+
+        .table th {
+            background: var(--primary-light) !important;
+            color: var(--text) !important;
+        }
+
+        .table td {
+            border-color: rgba(148, 163, 184, 0.2) !important;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding-inline: 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .navbar-menu {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .page-container {
+                padding-inline: 16px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-logo {
+                align-items: center;
+            }
+            
+            .footer-info {
+                text-align: center;
+            }
+            
+            .dropdown-notifications {
+                position: fixed !important;
+                left: 10px !important;
+                right: 10px !important;
+                width: auto !important;
+                max-width: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-logo-link">
+                <img src="{% static 'images/logo.png' %}" 
+                    alt="Logo MADA JOBINCLICK" 
+                    class="navbar-logo-img"
+                    width="40">
+            </a>
+
+            <div class="navbar-title">
+                <a href="{% url 'home' %}">
+                    MADA JOB-INCLICK
+                </a>
+                <span class="navbar-title-sub">
+                    Recrutement public transparent
+                </span>
+            </div>
+        </div>
+
+        <nav class="navbar-menu">
+            <a href="{% url 'liste_administrations' %}" class="nav-link {% if request.resolver_match.url_name == 'liste_administrations' %}nav-link-active{% endif %}">
+                <i class="bi bi-buildings" style="font-size: 14px;"></i> Administrations
+            </a>
+
+            <a href="{% url 'liste_offres' %}" class="nav-link {% if request.resolver_match.url_name == 'liste_offres' %}nav-link-active{% endif %}">
+                <i class="bi bi-briefcase" style="font-size: 14px;"></i> Offres d'emploi
+            </a>
+
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}nav-link-active{% endif %}">
+                       <i class="bi bi-briefcase" style="font-size: 14px;"></i> Tableau de bord 
+                    </a>
+                {% endif %}
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'mes_candidatures' %}" class="nav-link {% if request.resolver_match.url_name == 'mes_candidatures' %}nav-link-active{% endif %}">
+                <i class="bi bi-file-earmark-text" style="font-size: 14px;"></i> Mes Candidatures
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'about' %}" class="nav-link no-scale {% if request.resolver_match.url_name == 'about' %}nav-link-active{% endif %}">
+                <i class="bi bi-info-circle" style="font-size: 14px;"></i> À propos
+            </a>
+        </nav>
+
+        <div class="navbar-right">
+            <!-- Notifications -->
+            {% if user.is_authenticated %}
+            <div class="nav-item dropdown" style="list-style: none; margin: 0;">
+                <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" 
+                role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    <span id="notification-badge" class="badge bg-danger d-none">0</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-notifications" 
+                    aria-labelledby="notificationsDropdown" style="min-width: 300px; max-width: 400px;">
+                    <div class="dropdown-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Notifications</h6>
+                        <a href="{% url 'notifications_view' %}" class="small">Voir tout</a>
+                    </div>
+                    <div id="notification-list">
+                        <!-- Les notifications seront chargées ici par AJAX -->
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-footer text-center py-2">
+                        <a href="{% url 'notifications_view' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i> Voir toutes les notifications
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Bouton mode sombre/clair -->
+            <button class="theme-toggle" id="themeToggle" title="Basculer le mode sombre/clair">
+                <i class="bi bi-sun-fill"></i>
+                <i class="bi bi-moon-fill"></i>
+            </button>
+
+            {% if user.is_authenticated %}
+            <div style="position: relative; display: inline-block;" id="userDropdown">
+                <!-- Bouton principal -->
+                <div id="dropdownToggle" style="cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255, 255, 255, 0.3);">
+                        <i class="bi bi-person" style="font-size: 18px; color: white;"></i>
+                    </div>
+                    <span style="font-weight: 600; color: white; font-size: 15px;">{{ user.username }}</span>
+                    <i id="chevron" class="bi bi-chevron-down" style="color: white; font-size: 14px; transition: transform 0.3s;"></i>
+                </div>
+                
+                <!-- Menu dropdown -->
+                <div id="dropdownMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); min-width: 220px; background: var(--card-bg); border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); padding: 12px 0; z-index: 1000; border: 1px solid rgba(0, 0, 0, 0.08);">
+                    <a href="{% url 'profile' %}" style="display: flex; align-items: center; padding: 12px 20px; color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.2s;">
+                        <i class="bi bi-person" style="margin-right: 12px; color: var(--primary); font-size: 17px;"></i>
+                        Mon profil
+                    </a>
+                    
+                    <div style="height: 1px; background: rgba(148, 163, 184, 0.3); margin: 8px 20px;"></div>
+                    
+                    <a href="{% url 'logout' %}" style="display: flex; align-items: center; padding: 12px 20px; color: var(--danger); text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.2s;">
+                        <i class="bi bi-box-arrow-right" style="margin-right: 12px; font-size: 17px;"></i>
+                        Déconnexion
+                    </a>
+                </div>
+            </div>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-outline" 
+                style="color: var(--text); border-color: var(--text); background-color: transparent; padding: 8px 16px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; transition: all 0.3s;"
+                onmouseover="this.style.backgroundColor='var(--primary)'; this.style.color='white';"
+                onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text)';">
+                    <i class="bi bi-box-arrow-in-right" style="margin-right: 4px;"></i> Connexion
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+            <div class="flash-message {% if message.tags == 'success' %}flash-success{% elif message.tags == 'error' %}flash-error{% endif %}">
+                <div class="flash-dot"></div>
+                <div>{{ message }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- CONTENU -->
+    <main class="page-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="footer-logo-top">MADA</div>
+                <div class="footer-logo-bottom">JOBINCLICK</div>
+            </div>
+           <div class="footer-info">
+            <p><strong>MADA JOBINCLICK - Plateforme de recrutement public</strong></p>
+            <p><i class="fas fa-envelope"></i> mada@gmail.com | <i class="fas fa-phone"></i> +212 617351656</p>
+            <p><i class="fas fa-map-marker-alt"></i> Rabat, FSR</p>
+        </div>
+        </div>
+        <div class="footer-separator"></div>
+        <div class="footer-bottom">
+            <p>© 2026 MADA JOBINCLICK - Tous droits réservés</p>
+            <p>Plateforme officielle de recrutement public</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script principal -->
+    <script>
+        // Fonction pour récupérer le token CSRF
+        function getCsrfToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
+
+        // Fonction pour échapper le HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Fonction pour formater la date "il y a"
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            const intervals = [
+                { label: 'an', seconds: 31536000 },
+                { label: 'mois', seconds: 2592000 },
+                { label: 'semaine', seconds: 604800 },
+                { label: 'jour', seconds: 86400 },
+                { label: 'heure', seconds: 3600 },
+                { label: 'minute', seconds: 60 },
+                { label: 'seconde', seconds: 1 }
+            ];
+            
+            for (const interval of intervals) {
+                const count = Math.floor(seconds / interval.seconds);
+                if (count >= 1) {
+                    return count === 1 ? `il y a 1 ${interval.label}` : `il y a ${count} ${interval.label}s`;
+                }
+            }
+            
+            return 'à l\'instant';
+        }
+
+        // Fonctions pour les notifications
+        function getNotificationIcon(type) {
+            const icons = {
+                'info': 'fas fa-info-circle',
+                'success': 'fas fa-check-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'error': 'fas fa-times-circle',
+                'message': 'fas fa-envelope',
+                'comment': 'fas fa-comment',
+                'like': 'fas fa-heart',
+                'follow': 'fas fa-user-plus'
+            };
+            return icons[type] || 'fas fa-bell';
+        }
+
+        function getNotificationColor(type) {
+            const colors = {
+                'info': 'info',
+                'success': 'success',
+                'warning': 'warning',
+                'error': 'danger'
+            };
+            return colors[type] || 'primary';
+        }
+
+        // Fonction pour charger les notifications
+        function loadNotifications() {
+            const notificationList = document.getElementById('notification-list');
+            const notificationBadge = document.getElementById('notification-badge');
+            
+            if (!notificationList) return;
+            
+            fetch('/api/notifications/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Mettre à jour le badge
+                    if (notificationBadge) {
+                        if (data.unread_count > 0) {
+                            notificationBadge.textContent = data.unread_count;
+                            notificationBadge.classList.remove('d-none');
+                        } else {
+                            notificationBadge.classList.add('d-none');
+                        }
+                    }
+                    
+                    // Mettre à jour la liste
+                    notificationList.innerHTML = '';
+                    
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(notification => {
+                            const notificationItem = createNotificationItem(notification);
+                            notificationList.appendChild(notificationItem);
+                        });
+                    } else {
+                        notificationList.innerHTML = `
+                            <div class="text-center py-4">
+                                <i class="fas fa-bell-slash text-muted mb-2" style="font-size: 24px;"></i>
+                                <p class="text-muted mb-0">Aucune notification</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des notifications:', error);
+                    notificationList.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-exclamation-triangle text-danger mb-2" style="font-size: 24px;"></i>
+                            <p class="text-danger mb-0">Erreur de chargement</p>
+                        </div>
+                    `;
+                });
+        }
+
+            // Fonction pour créer un élément de notification
+            function createNotificationItem(notification) {
+                const item = document.createElement('div');
+                item.className = `dropdown-item notification-item ${notification.unread ? 'unread' : ''}`;
+                item.style.cssText = `
+                    cursor: pointer;
+                    border-left: 3px solid ${notification.unread ? 'var(--primary)' : 'transparent'};
+                    padding: 12px 16px;
+                    transition: background-color 0.2s;
+                `;
+                
+                item.innerHTML = `
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="${getNotificationIcon(notification.type)} text-${getNotificationColor(notification.type)}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="mb-1" style="font-size: 14px; font-weight: ${notification.unread ? '600' : '400'}">
+                                ${escapeHtml(notification.message)}
+                            </div>
+                            <small class="text-muted" style="font-size: 12px;">
+                                <i class="far fa-clock me-1"></i>
+                                ${timeAgo(notification.created_at)}
+                            </small>
+                        </div>
+                        ${notification.unread ? 
+                            `<button class="btn btn-sm btn-link mark-as-read" data-id="${notification.id}" style="padding: 0; color: var(--muted);">
+                                <i class="fas fa-check"></i>
+                            </button>` 
+                            : ''
+                        }
+                    </div>
+                `;
+                
+                // Ajouter l'événement pour marquer comme lu
+                if (notification.unread) {
+                    const markAsReadBtn = item.querySelector('.mark-as-read');
+                    if (markAsReadBtn) {
+                        markAsReadBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            markAsRead(notification.id);
+                        });
+                    }
+                }
+                
+                // Ajouter l'événement pour cliquer sur la notification
+                if (notification.url) {
+                    item.addEventListener('click', function() {
+                        if (notification.unread) {
+                            markAsRead(notification.id, notification.url);
+                        } else {
+                            window.location.href = notification.url;
+                        }
+                    });
+                } else {
+                    // Si pas d'URL, juste marquer comme lu au clic
+                    item.addEventListener('click', function() {
+                        if (notification.unread) {
+                            markAsRead(notification.id);
+                        }
+                    });
+                }
+                
+                return item;
+            }
+
+            // Fonction pour marquer une notification comme lue
+            function markAsRead(notificationId, redirectUrl = null) {
+                fetch(`/api/notifications/${notificationId}/mark-as-read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Recharger les notifications
+                        loadNotifications();
+                        // Rediriger si une URL est fournie
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        }
+                    }
+                })
+                .catch(error => console.error('Erreur:', error));
+            }
+
+            // Script principal au chargement du DOM
+            document.addEventListener('DOMContentLoaded', function() {
+                // Charger les notifications si l'utilisateur est connecté
+                
+                // Gestion du mode sombre/clair
+                const themeToggle = document.getElementById('themeToggle');
+                const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+                
+                // Vérifier le localStorage ou la préférence système
+                const currentTheme = localStorage.getItem('theme');
+                
+                if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+                    document.body.classList.add('dark-mode');
+                }
+                
+                themeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    
+                    let theme = 'light';
+                    if (document.body.classList.contains('dark-mode')) {
+                        theme = 'dark';
+                    }
+                    localStorage.setItem('theme', theme);
+                });
+
+                // Animation pour les cartes d'offres
+                const offreCards = document.querySelectorAll('.offre-card');
+                offreCards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.zIndex = '10';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.zIndex = '1';
+                    });
+                });
+                
+                // Prévenir la soumission des formulaires de déconnexion
+                document.querySelectorAll('form[action*="logout"]').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        if (!confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+
+                // Gérer les messages flash (auto-dismiss après 5 secondes)
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(message => {
+                    setTimeout(() => {
+                        message.style.opacity = '0';
+                        message.style.transform = 'translateX(100px)';
+                        setTimeout(() => {
+                            message.remove();
+                        }, 300);
+                    }, 5000);
+                });
+
+                // Gestion du dropdown utilisateur
+                const dropdownToggle = document.getElementById('dropdownToggle');
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                const chevron = document.getElementById('chevron');
+                
+                if (dropdownToggle) {
+                    dropdownToggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const isDisplayed = dropdownMenu.style.display === 'block';
+                        dropdownMenu.style.display = isDisplayed ? 'none' : 'block';
+                        if (isDisplayed) {
+                            chevron.style.transform = 'rotate(0deg)';
+                        } else {
+                            chevron.style.transform = 'rotate(180deg)';
+                        }
+                    });
+                    
+                    document.addEventListener('click', function() {
+                        dropdownMenu.style.display = 'none';
+                        chevron.style.transform = 'rotate(0deg)';
+                    });
+                    
+                    dropdownMenu.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                    });
+                }
+            });
+        </script>
+    </body>
+    </html>

@@ -1,0 +1,1325 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+{% load custom_tags %}
+{% static 'images/offre-default.jpg' as default_image_url %}
+{% block content %}
+<div class="offres-container">
+    <!-- En-tête -->
+    <div class="offres-header">
+        <h1 class="offres-title">
+            <i class="bi bi-briefcase"></i>
+            Offres d'emploi disponibles
+        </h1>
+        <p class="offres-subtitle">
+            Découvrez toutes les opportunités de carrière dans le secteur public
+            <span class="offres-count">{{ offres.paginator.count }} offres</span>
+        </p>
+    </div>
+
+    <!-- Barre de recherche et filtres -->
+    <div class="filters-section">
+        <div class="filters-header">
+            <h2>
+                <i class="bi bi-search"></i>
+                Rechercher et filtrer les offres
+            </h2>
+        </div>
+        
+        <form method="GET" action="{% url 'liste_offres' %}" class="filters-form" id="filters-form">
+            <!-- Barre de recherche principale -->
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Rechercher par mot-clé, titre, description, compétences..." 
+                        class="search-input"
+                        value="{{ request.GET.q|default:'' }}"
+                        autocomplete="off"
+                    >
+                    {% if request.GET.q %}
+                    <button type="button" class="clear-search" onclick="clearSearch()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    {% endif %}
+                </div>
+                <button type="submit" class="search-button">
+                    <i class="bi bi-search"></i>
+                    Rechercher
+                </button>
+            </div>
+
+            <!-- Filtres avancés -->
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="grade">
+                        <i class="bi bi-star"></i>
+                        Grade
+                    </label>
+                    <select name="grade" id="grade" class="filter-select">
+                        <option value="">Tous les grades</option>
+                        {% for grade_val, grade_label in grade_choices %}
+                        <option value="{{ grade_val }}" 
+                            {% if request.GET.grade == grade_val %}selected{% endif %}>
+                            {{ grade_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="date_limite">
+                        <i class="bi bi-calendar"></i>
+                        Date limite
+                    </label>
+                    <select name="date_limite" id="date_limite" class="filter-select">
+                        <option value="">Toutes les dates</option>
+                        <option value="7jours" {% if request.GET.date_limite == '7jours' %}selected{% endif %}>
+                            Dans les 7 jours
+                        </option>
+                        <option value="30jours" {% if request.GET.date_limite == '30jours' %}selected{% endif %}>
+                            Dans les 30 jours
+                        </option>
+                        <option value="expiree" {% if request.GET.date_limite == 'expiree' %}selected{% endif %}>
+                            Offres expirées
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="tri">
+                        <i class="bi bi-sort-down"></i>
+                        Trier par
+                    </label>
+                    <select name="tri" id="tri" class="filter-select">
+                        <option value="date_desc" {% if request.GET.tri == 'date_desc' or not request.GET.tri %}selected{% endif %}>
+                            Plus récentes
+                        </option>
+                        <option value="date_asc" {% if request.GET.tri == 'date_asc' %}selected{% endif %}>
+                            Plus anciennes
+                        </option>
+                        <option value="date_limite_asc" {% if request.GET.tri == 'date_limite_asc' %}selected{% endif %}>
+                            Date limite (proche)
+                        </option>
+                        <option value="titre_asc" {% if request.GET.tri == 'titre_asc' %}selected{% endif %}>
+                            Titre (A-Z)
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group filter-button">
+                    <a href="{% url 'liste_offres' %}" class="btn-reset">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Réinitialiser
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tags des filtres actifs -->
+            {% if has_filters %}
+            <div class="active-filters">
+                <div class="active-filters-header">
+                    <span>Filtres actifs :</span>
+                </div>
+                <div class="active-filters-tags">
+                    {% if request.GET.q %}
+                    <span class="filter-tag">
+                        Recherche : "{{ request.GET.q }}"
+                        <a href="?{% remove_param request 'q' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    {% if request.GET.administration and selected_administration %}
+                    <span class="filter-tag">
+                        Administration : {{ selected_administration.nom }}
+                        <a href="?{% remove_param request 'administration' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    {% if request.GET.grade and selected_grade_label %}
+                    <span class="filter-tag">
+                        Grade : {{ selected_grade_label }}
+                        <a href="?{% remove_param request 'grade' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    {% if request.GET.type_contrat %}
+                    <span class="filter-tag">
+                        Contrat : {{ request.GET.type_contrat }}
+                        <a href="?{% remove_param request 'type_contrat' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    {% if request.GET.localisation %}
+                    <span class="filter-tag">
+                        Localisation : {{ request.GET.localisation }}
+                        <a href="?{% remove_param request 'localisation' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    {% if request.GET.date_limite %}
+                    <span class="filter-tag">
+                        Date : 
+                        {% if request.GET.date_limite == '7jours' %}7 jours
+                        {% elif request.GET.date_limite == '30jours' %}30 jours
+                        {% elif request.GET.date_limite == 'expiree' %}Expirées
+                        {% endif %}
+                        <a href="?{% remove_param request 'date_limite' %}" class="remove-filter">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    
+                    <a href="{% url 'liste_offres' %}" class="clear-all-filters">
+                        <i class="bi bi-x-circle"></i>
+                        Tout effacer
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Liste des offres -->
+    {% if offres %}
+    <div class="offres-grid">
+        {% for offre in offres %}
+        <div class="offre-card">
+            <!-- Image de l'offre -->
+           <div class="offre-image-container">
+    {% if offre.grade %}
+        <img src="{% static 'images/offre-' %}{{ offre.grade|last }}.jpg"
+             class="offre-image" 
+             alt="{{ offre.titre }}"
+             data-default-src="{% static 'images/offre-default.jpg' %}">
+    {% else %}
+        <img src="{% static 'images/offre-default.jpg' %}"
+             class="offre-image" 
+             alt="{{ offre.titre }}">
+    {% endif %}
+                        
+                <!-- Badges superposés sur l'image -->
+                <div class="offre-badges-overlay">
+                    <div class="statut-badge {% if offre.statut == 'publiee' %}badge-published{% elif offre.statut == 'expiree' %}badge-expired{% else %}badge-draft{% endif %}">
+                        {{ offre.get_statut_display }}
+                    </div>
+                    
+                    <div class="offre-grade">
+                        <i class="bi bi-star"></i>
+                        {{ offre.get_grade_display }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenu de la carte -->
+            <div class="offre-content">
+                <!-- Titre et administration -->
+                <h3 class="offre-titre">
+                    {{ offre.titre|truncatechars:50 }}
+                </h3>
+                
+                <div class="offre-administration">
+                    <div class="administration-info">
+                        <i class="bi bi-building"></i>
+                        <span>{{ offre.administration.nom }}</span>
+                    </div>
+                    <div class="offre-location">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>{{ offre.administration.ville }}</span>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <p class="offre-description">
+                    {{ offre.description|truncatewords:25 }}
+                </p>
+                
+                <!-- Informations supplémentaires -->
+                <div class="offre-details">
+                    <div class="detail-item">
+                        <i class="bi bi-file-text"></i>
+                        <span>{{ offre.get_type_contrat_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-people"></i>
+                        <span>{{ offre.nombre_postes }} poste{{ offre.nombre_postes|pluralize }}</span>
+                    </div>
+                </div>
+                
+                <!-- Date limite et bouton -->
+                <div class="offre-footer">
+                    <div class="offre-timeline">
+                        <div class="date-limite">
+                            <i class="bi bi-calendar"></i>
+                            <span>Limite: {{ offre.date_limite|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="jours-restants {% if offre.jours_restants > 7 %}text-success{% elif offre.jours_restants > 0 %}text-warning{% else %}text-danger{% endif %}">
+                            <i class="bi bi-clock"></i>
+                            {% if offre.jours_restants > 0 %}
+                                <span>{{ offre.jours_restants }} jour{{ offre.jours_restants|pluralize }} restant{{ offre.jours_restants|pluralize:"s" }}</span>
+                            {% else %}
+                                <span>Offre expirée</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'detail_offre' offre.pk %}" class="offre-button">
+                        <i class="bi bi-eye"></i>
+                        Voir détails
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if offres.has_other_pages %}
+    <div class="pagination-section">
+        <div class="pagination-info">
+            Page {{ offres.number }} sur {{ offres.paginator.num_pages }}
+        </div>
+        
+        <div class="pagination">
+            {% if offres.has_previous %}
+                <a href="?page={{ offres.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   class="page-link">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            {% else %}
+                <span class="page-link disabled">
+                    <i class="bi bi-chevron-left"></i>
+                </span>
+            {% endif %}
+
+            {% for num in offres.paginator.page_range %}
+                {% if offres.number == num %}
+                    <span class="page-link active">{{ num }}</span>
+                {% elif num > offres.number|add:'-3' and num < offres.number|add:'3' %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                       class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if offres.has_next %}
+                <a href="?page={{ offres.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   class="page-link">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            {% else %}
+                <span class="page-link disabled">
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Statistiques -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ offres.paginator.count }}</div>
+                <div class="stat-label">Offres disponibles</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">{{ administrations.count }}</div>
+                <div class="stat-label">Administrations</div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Message si aucune offre -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="bi bi-briefcase"></i>
+        </div>
+        <h3>Aucune offre disponible</h3>
+        <p>
+            Il n'y a actuellement aucune offre d'emploi correspondant à vos critères.<br>
+            Revenez plus tard ou élargissez vos critères de recherche.
+        </p>
+        <a href="{% url 'liste_offres' %}" class="btn-primary">
+            <i class="bi bi-arrow-clockwise"></i>
+            Voir toutes les offres
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Call to Action -->
+    {% if user.is_authenticated and user.user_type == 'candidat' %}
+    <div class="cta-section">
+        <h4>Prêt à postuler ?</h4>
+        <p>Assurez-vous que votre profil et votre CV sont à jour.</p>
+        <a href="{% url 'edit_profile' %}" class="btn-outline">
+            <i class="bi bi-person-gear"></i>
+            Mettre à jour mon profil
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Variables spécifiques pour la page des offres */
+    :root {
+        --offres-bg-primary: #ffffff;
+        --offres-bg-secondary: #f8fafc;
+        --offres-text-primary: #1f2933;
+        --offres-text-secondary: #6b7280;
+        --offres-border: rgba(148, 163, 184, 0.1);
+        --offres-card-bg: #ffffff;
+        --offres-shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+        --offres-primary: #023E8A;
+        --offres-primary-light: #E3F2FD;
+        --offres-accent: #00B4D8;
+    }
+
+    .dark-mode {
+        --offres-bg-primary: #0f172a;
+        --offres-bg-secondary: #1e293b;
+        --offres-text-primary: #f1f5f9;
+        --offres-text-secondary: #94a3b8;
+        --offres-border: rgba(71, 85, 105, 0.3);
+        --offres-card-bg: #1e293b;
+        --offres-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.25);
+        --offres-primary: #5ea1ff;
+        --offres-primary-light: rgba(94, 161, 255, 0.1);
+        --offres-accent: #00B4D8;
+    }
+
+    .offres-container {
+        padding: 32px 5vw 48px;
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: var(--offres-bg-primary);
+        color: var(--offres-text-primary);
+        min-height: calc(100vh - 64px);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .offres-header {
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .offres-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--offres-primary);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .offres-subtitle {
+        font-size: 18px;
+        color: var(--offres-text-secondary);
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .offres-count {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Filtres Section */
+    .filters-section {
+        background: var(--offres-card-bg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--offres-shadow-soft);
+        border: 1px solid var(--offres-border);
+        margin-bottom: 40px;
+        overflow: hidden;
+    }
+
+    .filters-header {
+        background: linear-gradient(135deg, rgba(2, 62, 138, 0.05), rgba(61, 61, 131, 0.05));
+        padding: 20px 30px;
+        border-bottom: 1px solid var(--offres-border);
+    }
+
+    .dark-mode .filters-header {
+        background: linear-gradient(135deg, rgba(94, 161, 255, 0.1), rgba(61, 61, 131, 0.1));
+    }
+
+    .filters-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--offres-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .filters-form {
+        padding: 30px;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--offres-primary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-input,
+    .filter-select {
+        padding: 12px 16px;
+        border: 1px solid var(--offres-border);
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        transition: all 0.2s ease;
+        background: var(--offres-bg-secondary);
+        color: var(--offres-text-primary);
+    }
+
+    .filter-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--offres-primary);
+        background: var(--offres-card-bg);
+        box-shadow: 0 0 0 3px rgba(94, 161, 255, 0.1);
+    }
+
+    .filter-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23023E8A' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+    .dark-mode .filter-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235ea1ff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    }
+
+    /* Styles pour la barre de recherche */
+    .search-bar-container {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .search-input-wrapper {
+        flex: 1;
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--offres-text-secondary);
+        font-size: 18px;
+        z-index: 1;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 16px 52px 16px 48px;
+        border: 2px solid var(--offres-primary);
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: var(--offres-card-bg);
+        color: var(--offres-text-primary);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--offres-accent);
+        box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+    }
+
+    .clear-search {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--offres-text-secondary);
+        font-size: 20px;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s ease;
+    }
+
+    .clear-search:hover {
+        color: #B91C1C;
+    }
+
+    .search-button {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        padding: 16px 32px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(2, 62, 138, 0.25);
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .search-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(2, 62, 138, 0.35);
+    }
+
+    /* Boutons de filtre */
+    .filter-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(2, 62, 138, 0.25);
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(2, 62, 138, 0.35);
+    }
+
+    .btn-reset {
+        background: var(--offres-card-bg);
+        color: var(--offres-text-secondary);
+        padding: 12px 24px;
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid var(--offres-border);
+        cursor: pointer;
+        width: 100%;
+        justify-content: center;
+        margin-top: 12px;
+    }
+
+    .btn-reset:hover {
+        background: var(--offres-bg-secondary);
+        border-color: var(--offres-primary);
+        color: var(--offres-primary);
+    }
+
+    /* Tags des filtres actifs */
+    .active-filters {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid var(--offres-border);
+    }
+
+    .active-filters-header {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--offres-text-secondary);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .active-filters-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .filter-tag {
+        background: linear-gradient(135deg, rgba(94, 161, 255, 0.1), rgba(61, 61, 131, 0.1));
+        color: var(--offres-primary);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--offres-border);
+    }
+
+    .remove-filter {
+        color: #B91C1C;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .remove-filter:hover {
+        background: #B91C1C;
+        color: white;
+    }
+
+    .clear-all-filters {
+        color: var(--offres-text-secondary);
+        font-size: 14px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: var(--radius-md);
+        transition: all 0.2s ease;
+    }
+
+    .clear-all-filters:hover {
+        color: #B91C1C;
+        background: rgba(185, 28, 28, 0.1);
+    }
+
+    /* Offres Grid */
+    .offres-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 32px;
+        margin-bottom: 50px;
+    }
+
+    .offre-card {
+        background: var(--offres-card-bg);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--offres-shadow-soft);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid var(--offres-border);
+    }
+
+    .offre-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+        border-color: var(--offres-primary);
+    }
+
+    .dark-mode .offre-card:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Image de l'offre */
+    .offre-image-container {
+        position: relative;
+        height: 200px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .offre-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        filter: brightness(0.9);
+    }
+
+    .dark-mode .offre-image {
+        filter: brightness(0.8);
+    }
+
+    .offre-card:hover .offre-image {
+        transform: scale(1.05);
+    }
+
+    /* Badges superposés sur l'image */
+    .offre-badges-overlay {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .statut-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .dark-mode .statut-badge {
+        background: rgba(30, 41, 59, 0.9);
+    }
+
+    .badge-published {
+        color: #166534;
+        border: 1px solid #166534;
+    }
+
+    .badge-expired {
+        color: #B91C1C;
+        border: 1px solid #B91C1C;
+    }
+
+    .badge-draft {
+        color: #92400E;
+        border: 1px solid #92400E;
+    }
+
+    .offre-grade {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(94, 161, 255, 0.9);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+
+    /* Contenu de la carte */
+    .offre-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .offre-titre {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--offres-primary);
+        margin-bottom: 16px;
+        line-height: 1.3;
+        min-height: 52px;
+    }
+
+    .offre-administration {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .administration-info,
+    .offre-location {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--offres-text-secondary);
+    }
+
+    .offre-description {
+        color: var(--offres-text-primary);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex-grow: 1;
+        opacity: 0.9;
+    }
+
+    .offre-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--offres-border);
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--offres-text-secondary);
+    }
+
+    .offre-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .offre-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .date-limite {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--offres-text-secondary);
+    }
+
+    .jours-restants {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .text-success {
+        color: #22C55E;
+    }
+
+    .dark-mode .text-success {
+        color: #4ADE80;
+    }
+
+    .text-warning {
+        color: #F59E0B;
+    }
+
+    .dark-mode .text-warning {
+        color: #FBBF24;
+    }
+
+    .text-danger {
+        color: #EF4444;
+    }
+
+    .dark-mode .text-danger {
+        color: #F87171;
+    }
+
+    .offre-button {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        padding: 10px 20px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(2, 62, 138, 0.25);
+    }
+
+    .offre-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(2, 62, 138, 0.35);
+    }
+
+    /* Pagination */
+    .pagination-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin: 50px 0 40px;
+    }
+
+    .pagination-info {
+        color: var(--offres-text-secondary);
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .page-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--offres-border);
+        color: var(--offres-text-primary);
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background: var(--offres-primary-light);
+        border-color: var(--offres-primary);
+        color: var(--offres-primary);
+    }
+
+    .page-link.active {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        border-color: transparent;
+    }
+
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: var(--offres-text-secondary);
+    }
+
+    /* Statistiques */
+    .stats-section {
+        background: var(--offres-card-bg);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        margin-top: 40px;
+        box-shadow: var(--offres-shadow-soft);
+        border: 1px solid var(--offres-border);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 30px 20px;
+        background: var(--offres-bg-secondary);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--offres-border);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--offres-primary);
+        box-shadow: 0 10px 30px rgba(94, 161, 255, 0.1);
+    }
+
+    .stat-value {
+        font-size: 48px;
+        font-weight: 800;
+        color: var(--offres-primary);
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 16px;
+        color: var(--offres-text-secondary);
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: var(--offres-card-bg);
+        border-radius: var(--radius-lg);
+        border: 2px dashed var(--offres-border);
+        margin: 40px 0;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--offres-primary-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+    }
+
+    .empty-icon i {
+        font-size: 32px;
+        color: var(--offres-primary);
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+        color: var(--offres-text-primary);
+        margin-bottom: 16px;
+    }
+
+    .empty-state p {
+        color: var(--offres-text-secondary);
+        max-width: 500px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        text-align: center;
+        padding: 40px;
+        background: linear-gradient(135deg, rgba(94, 161, 255, 0.05), rgba(61, 61, 131, 0.05));
+        border-radius: var(--radius-lg);
+        margin-top: 50px;
+        border: 1px solid var(--offres-border);
+    }
+
+    .cta-section h4 {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--offres-primary);
+        margin-bottom: 12px;
+    }
+
+    .cta-section p {
+        color: var(--offres-text-secondary);
+        margin-bottom: 24px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--offres-primary), #3d3d83);
+        color: white;
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(94, 161, 255, 0.3);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(94, 161, 255, 0.4);
+    }
+
+    .btn-outline {
+        background: var(--offres-card-bg);
+        color: var(--offres-primary);
+        padding: 14px 28px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid var(--offres-primary);
+    }
+
+    .btn-outline:hover {
+        background: var(--offres-primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(94, 161, 255, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .filters-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .offres-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .offres-container {
+            padding: 24px;
+        }
+        
+        .offres-title {
+            font-size: 28px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filters-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-button {
+            align-items: flex-start;
+        }
+        
+        .search-bar-container {
+            flex-direction: column;
+        }
+        
+        .search-input-wrapper {
+            width: 100%;
+        }
+        
+        .search-button {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .offres-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .pagination-section {
+            flex-direction: column;
+        }
+        
+        .offre-footer {
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        
+        .offre-button {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .active-filters-tags {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .offres-container {
+            padding: 16px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .offre-titre {
+            font-size: 18px;
+            min-height: auto;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+        }
+    }
+</style>
+
+<script>
+    function clearSearch() {
+        const searchInput = document.querySelector('.search-input');
+        searchInput.value = '';
+        searchInput.focus();
+    }
+
+    // Fonction pour enlever un paramètre de l'URL
+    function removeUrlParameter(url, parameter) {
+        var urlparts = url.split('?');
+        if (urlparts.length >= 2) {
+            var prefix = encodeURIComponent(parameter) + '=';
+            var pars = urlparts[1].split(/[&;]/g);
+            
+            for (var i = pars.length; i-- > 0;) {
+                if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+                    pars.splice(i, 1);
+                }
+            }
+            
+            url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : '');
+            return url;
+        } else {
+            return url;
+        }
+    }
+
+    // Fonction pour supprimer un filtre (version JavaScript alternative)
+    function removeFilter(paramName) {
+        const url = removeUrlParameter(window.location.href, paramName);
+        window.location.href = url;
+    }
+
+    // Soumettre le formulaire quand les sélecteurs changent (optionnel)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Optionnel : Soumettre automatiquement quand certains filtres changent
+        const autoSubmitSelects = document.querySelectorAll('#administration, #grade, #type_contrat, #date_limite, #tri');
+        autoSubmitSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                document.getElementById('filters-form').submit();
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,436 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Mes Candidatures - MADA JOBINCLICK{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- En-tête -->
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <div>
+                <h1 style="font-size: 28px; font-weight: 700; color: #023E8A; margin: 0 0 8px 0;">
+                    Mes Candidatures
+                </h1>
+                <p style="color: var(--muted); margin: 0;">
+                    Suivez l'état de vos candidatures
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span style="background: linear-gradient(135deg, #023E8A, #3d3d83); color: white; padding: 8px 16px; border-radius: 999px; font-weight: 500;">
+                    {{ candidatures.count }} candidature(s)
+                </span>
+                <a href="{% url 'liste_offres' %}" class="btn-primary" style="text-decoration: none;">
+                    <i class="bi bi-plus-circle" style="margin-right: 6px;"></i>Postuler
+                </a>
+            </div>
+        </div>
+
+        <!-- Section Statistiques -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px;">
+            
+            <!-- Total -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-briefcase" style="color: #023E8A; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.total }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">Total</p>
+            </div>
+            
+            <!-- En attente -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-clock" style="color: #00B4D8; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.deposees }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">En attente</p>
+            </div>
+            
+            <!-- En revue -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-search" style="color: #FF9E00; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.en_revue }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">En revue</p>
+            </div>
+            
+            <!-- Acceptées -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-check-circle" style="color: #06D6A0; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.retenues }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">Acceptées</p>
+            </div>
+            
+            <!-- Entretiens -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-calendar-check" style="color: #FF6D00; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.convoques }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">Entretiens</p>
+            </div>
+            
+            <!-- Rejetées -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-x-circle" style="color: #EF476F; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.rejetees }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">Rejetées</p>
+            </div>
+            
+            <!-- Embauchées -->
+            <div class="offre-card" style="text-align: center; padding: 20px;">
+                <i class="bi bi-person-check" style="color: #023E8A; font-size: 24px; margin-bottom: 12px;"></i>
+                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0; font-size: 24px;">
+                    {{ stats.embauches }}
+                </h3>
+                <p style="color: #00B4D8; margin: 0; font-size: 14px;">Embauchées</p>
+            </div>
+        </div>
+
+        {% if candidatures %}
+
+        <!-- Liste des candidatures -->
+        <div style="display: grid; gap: 20px;">
+            {% for candidature in candidatures %}
+                <div class="offre-card" style="position: relative; overflow: hidden;">
+                    <!-- Badge de statut déplacé dans le header de la carte -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; color: #023E8A; margin: 0 0 8px 0;">
+                                <a href="{% url 'detail_offre' candidature.offre.id_offre %}" 
+                                style="color: inherit; text-decoration: none;">
+                                    {{ candidature.offre.titre }}
+                                </a>
+                            </h3>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 14px;">
+                                    <i class="bi bi-building"></i>
+                                    {{ candidature.offre.administration.nom }}
+                                </span>
+                                <span style="display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 14px;">
+                                    <i class="bi bi-calendar"></i>
+                                    {{ candidature.date_depot|date:"d/m/Y" }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Badge de statut à droite du titre -->
+                        <div>
+                            {% if candidature.statut == 'deposee' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(0, 180, 216, 0.1); color: #00B4D8; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(0, 180, 216, 0.3);">
+                                    <i class="bi bi-clock" style="margin-right: 4px;"></i> En attente
+                                </span>
+                            {% elif candidature.statut == 'en_revue' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(255, 158, 0, 0.1); color: #FF9E00; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255, 158, 0, 0.3);">
+                                    <i class="bi bi-search" style="margin-right: 4px;"></i> En revue
+                                </span>
+                            {% elif candidature.statut == 'retenue' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(6, 214, 160, 0.1); color: #06D6A0; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(6, 214, 160, 0.3);">
+                                    <i class="bi bi-check-circle" style="margin-right: 4px;"></i> Acceptée
+                                </span>
+                            {% elif candidature.statut == 'rejetee' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(239, 71, 111, 0.1); color: #EF476F; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(239, 71, 111, 0.3);">
+                                    <i class="bi bi-x-circle" style="margin-right: 4px;"></i> Rejetée
+                                </span>
+                            {% elif candidature.statut == 'convoque' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(255, 109, 0, 0.1); color: #FF6D00; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(255, 109, 0, 0.3);">
+                                    <i class="bi bi-calendar-check" style="margin-right: 4px;"></i> Entretien
+                                </span>
+                            {% elif candidature.statut == 'embauche' %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(2, 62, 138, 0.1); color: #023E8A; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(2, 62, 138, 0.3);">
+                                    <i class="bi bi-person-check" style="margin-right: 4px;"></i> Embauché(e)
+                                </span>
+                            {% else %}
+                                <span style="display: inline-block; padding: 6px 12px; background: rgba(148, 163, 184, 0.1); color: #94A3B8; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid rgba(148, 163, 184, 0.3);">
+                                    {{ candidature.get_statut_display }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu principal -->
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start;">
+                        <!-- Informations principales -->
+                        <div>
+                            <!-- Détails du statut -->
+                            <div style="background: rgba(148, 163, 184, 0.05); padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="bi bi-info-circle" style="color: #023E8A;"></i>
+                                    <span style="font-size: 14px; color: #023E8A; font-weight: 500;">État de la candidature :</span>
+                                    <span style="font-size: 14px; color: var(--muted);">
+                                        {% if candidature.statut == 'deposee' %}
+                                            Votre candidature a été déposée et est en attente de traitement.
+                                        {% elif candidature.statut == 'en_revue' %}
+                                            Votre candidature est en cours d'examen par le service RH.
+                                        {% elif candidature.statut == 'retenue' %}
+                                            Félicitations ! Votre candidature a été retenue pour la suite du processus.
+                                        {% elif candidature.statut == 'rejetee' %}
+                                            Votre candidature n'a pas été retenue pour cette offre.
+                                        {% elif candidature.statut == 'convoque' %}
+                                            Vous êtes convoqué(e) pour un entretien. Consultez vos emails pour les détails.
+                                        {% elif candidature.statut == 'embauche' %}
+                                            Félicitations ! Vous avez été retenu(e) pour ce poste.
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% if candidature.date_validation %}
+                                <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                                    <i class="bi bi-calendar-check" style="color: #023E8A;"></i>
+                                    <span style="font-size: 14px; color: #023E8A; font-weight: 500;">Date de validation :</span>
+                                    <span style="font-size: 14px; color: var(--muted);">{{ candidature.date_validation|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Documents -->
+                            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                {% if candidature.cv %}
+                                <a href="{{ candidature.cv.url }}" target="_blank" 
+                                style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; 
+                                        background: rgba(2, 62, 138, 0.05); color: #023E8A; 
+                                        border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    Voir mon CV
+                                </a>
+                                {% endif %}
+                                {% if candidature.lettre_motivation %}
+                                <a href="{{ candidature.lettre_motivation.url }}" target="_blank"
+                                style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; 
+                                        background: rgba(2, 62, 138, 0.05); color: #023E8A; 
+                                        border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 500;">
+                                    <i class="bi bi-envelope"></i>
+                                    Voir ma lettre
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Actions et informations supplémentaires -->
+                        <div style="text-align: right; min-width: 200px;">
+                            <!-- Délai de réponse -->
+                            {% if candidature.delai_reponse %}
+                            <div style="margin-bottom: 16px;">
+                                <div style="color: var(--muted); font-size: 13px; margin-bottom: 4px;">
+                                    <i class="bi bi-clock"></i> Réponse avant le
+                                </div>
+                                <div style="font-weight: 600; color: #023E8A;">
+                                    {{ candidature.delai_reponse|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Boutons d'action -->
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <a href="{% url 'detail_offre' candidature.offre.id_offre %}" 
+                                class="btn-primary" 
+                                style="padding: 10px 16px; font-size: 14px; text-align: center; text-decoration: none;">
+                                    <i class="bi bi-eye"></i> Voir l'offre
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Commentaire RH -->
+                    {% if candidature.commentaire_rh %}
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(148, 163, 184, 0.1);">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <i class="bi bi-chat-left-text" style="color: #023E8A;"></i>
+                            <span style="font-weight: 500; color: #023E8A; font-size: 14px;">Commentaire RH</span>
+                        </div>
+                        <p style="color: var(--muted); margin: 0; font-size: 14px; line-height: 1.5;">
+                            {{ candidature.commentaire_rh|truncatechars:150 }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Aucune candidature -->
+        <div style="max-width: 500px; margin: 60px auto; text-align: center;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 24px; 
+                        background: rgba(2, 62, 138, 0.1); 
+                        border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-briefcase" style="font-size: 32px; color: #023E8A;"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 600; color: #023E8A; margin: 0 0 12px 0;">
+                Aucune candidature
+            </h3>
+            <p style="color: var(--muted); margin: 0 0 24px 0; line-height: 1.5;">
+                Vous n'avez pas encore postulé à des offres.<br>
+                Parcourez les offres disponibles et postulez !
+            </p>
+            <a href="{% url 'liste_offres' %}" class="btn-primary" style="padding: 12px 32px; text-decoration: none;">
+                <i class="bi bi-briefcase" style="margin-right: 8px;"></i>
+                Voir les offres disponibles
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+<!-- Styles additionnels -->
+<style>
+    .offre-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .offre-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(2, 62, 138, 0.15);
+    }
+    
+    /* Styles pour le mode sombre */
+    .dark-mode .offre-card {
+        background: var(--card-bg);
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+    
+    .dark-mode .offre-card .badge-statut {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+
+    /* Styles additionnels */
+    .offre-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .offre-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(2, 62, 138, 0.15);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 0 16px;
+        }
+        
+        /* En-tête de la page */
+        .page-container > div > div:first-child {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .page-container > div > div:first-child > div:last-child {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Badge de statut dans l'en-tête de la carte */
+        .offre-card > div:first-child {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .offre-card > div:first-child > div:last-child {
+            align-self: flex-start;
+        }
+        
+        /* Structure principale de la carte */
+        .offre-card > div:nth-child(2) {
+            display: flex !important;
+            flex-direction: column;
+            gap: 16px !important;
+        }
+        
+        /* Colonne de droite avec le bouton */
+        .offre-card > div:nth-child(2) > div:last-child {
+            text-align: left !important;
+            width: 100%;
+            min-width: auto !important;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+        
+        /* Bouton "Voir l'offre" prend 100% sur mobile */
+        .offre-card > div:nth-child(2) > div:last-child .btn-primary {
+            width: 100% !important;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        /* Section statistiques */
+        .page-container > div > div:nth-child(3) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .page-container > div > div:nth-child(3) .offre-card {
+            padding: 16px;
+            text-align: center;
+        }
+        
+        /* Section "Aucune candidature" */
+        .page-container > div > div:last-child {
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+        
+        .page-container > div > div:last-child .btn-primary {
+            width: 100% !important;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+    }
+
+    /* Styles pour le mode sombre */
+    .dark-mode .offre-card {
+        background: var(--card-bg);
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+
+    .dark-mode .offre-card .badge-statut {
+        background: rgba(255, 255, 255, 0.1);
+}
+
+    @media (max-width: 768px) {
+        .page-container > div {
+            padding: 0 16px;
+        }
+        
+        .offre-card > div {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+        }
+        
+        .offre-card > div > div:last-child {
+            text-align: left !important;
+        }
+        
+        .btn-primary {
+            width: 100% !important;
+        }
+        
+        
+        /* Pour les badges de statut sur mobile */
+        .offre-card > div > div:first-child {
+            margin-right: 80px;
+        }
+    }
+</style>
+{% endblock %}

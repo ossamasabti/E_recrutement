@@ -1,0 +1,713 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-container">
+    <!-- En-tête avec retour -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+        <div>
+            <a href="{% url 'profile' %}" class="btn-custom-outline" style="padding: 8px 16px;">
+                <i class="bi bi-arrow-left" style="margin-right: 4px;"></i> Retour au profil
+            </a>
+        </div>
+        <h1 style="color: #0077B6; font-size: 24px; font-weight: 600; margin: 0;">Modifier mon profil</h1>
+        <div style="width: 100px;"></div>
+    </div>
+
+    <!-- Bannière d'information -->
+    <div style="background: rgba(0, 180, 216, 0.1); border-left: 4px solid #00B4D8; padding: 16px; border-radius: var(--radius-md); margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
+        <i class="bi bi-info-circle-fill" style="color: #0077B6; font-size: 18px; flex-shrink: 0;"></i>
+        <div>
+            <strong style="display: block; color: #023E8A;">Complétez votre profil</strong>
+            <small style="color: var(--muted);">Un profil complet augmente vos chances d'être contacté par les recruteurs</small>
+        </div>
+    </div>
+
+    <!-- Carte du formulaire -->
+    <div class="offre-card" style="padding: 30px; margin: 0;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Section Informations de base -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-person-badge" style="margin-right: 8px;"></i>Informations personnelles
+                </h5>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Prénom <span style="color: var(--danger);">*</span>
+                        </label>
+                        <input type="text" 
+                               name="first_name" 
+                               value="{{ user.first_name }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Votre prénom"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Nom <span style="color: var(--danger);">*</span>
+                        </label>
+                        <input type="text" 
+                               name="last_name" 
+                               value="{{ user.last_name }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Votre nom"
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Informations professionnelles -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-briefcase" style="margin-right: 8px;"></i>Informations professionnelles
+                </h5>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Profession
+                        </label>
+                        <input type="text" 
+                               name="profession" 
+                               value="{{ user.profile.profession|default:'' }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Ex: Développeur Web, Chef de projet...">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Années d'expérience
+                        </label>
+                        <input type="number" 
+                               name="experience" 
+                               value="{{ user.profile.experience|default:0 }}" 
+                               min="0" 
+                               max="50"
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Nombre d'années">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 16px;">
+                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                        Niveau d'étude
+                    </label>
+                    <select name="niveau_etude" style="width: 100%; max-width: 250px; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px; background: white;">
+                        <option value="">Sélectionnez un niveau</option>
+                        <option value="bac" {% if user.profile.niveau_etude == 'bac' %}selected{% endif %}>Baccalauréat</option>
+                        <option value="bac+2" {% if user.profile.niveau_etude == 'bac+2' %}selected{% endif %}>Bac+2</option>
+                        <option value="bac+3" {% if user.profile.niveau_etude == 'bac+3' %}selected{% endif %}>Licence</option>
+                        <option value="bac+5" {% if user.profile.niveau_etude == 'bac+5' %}selected{% endif %}>Master</option>
+                        <option value="doctorat" {% if user.profile.niveau_etude == 'doctorat' %}selected{% endif %}>Doctorat</option>
+                        <option value="autre" {% if user.profile.niveau_etude == 'autre' %}selected{% endif %}>Autre</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Section Contact -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-envelope" style="margin-right: 8px;"></i>Coordonnées
+                </h5>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Téléphone
+                        </label>
+                        <div style="display: flex; border: 1px solid #00B4D8; border-radius: var(--radius-md); overflow: hidden;">
+                            <span style="padding: 12px; background: white; color: #023E8A; display: flex; align-items: center;">
+                                <i class="bi bi-telephone"></i>
+                            </span>
+                            <input type="text" 
+                                   name="phone" 
+                                   value="{{ user.profile.phone|default:'' }}" 
+                                   style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px;"
+                                   placeholder="+33 1 23 45 67 89">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Sélection du Rôle -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-person-gear" style="margin-right: 8px;"></i>Configuration du Rôle
+                </h5>
+                
+                <div style="background: rgba(255, 158, 0, 0.1); border-left: 4px solid #FF9E00; padding: 12px; border-radius: var(--radius-md); margin-bottom: 20px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <i class="bi bi-shield-exclamation" style="color: #FF9E00; margin-top: 2px;"></i>
+                        <div>
+                            <strong style="display: block; color: #023E8A;">Section réservée aux Administrateurs</strong>
+                            <p style="margin: 4px 0 0; color: var(--muted); font-size: 14px;">
+                                Vous pouvez choisir le rôle avec lequel vous souhaitez vous connecter.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 16px; color: var(--text);">
+                        Sélectionner votre rôle
+                    </label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 16px;">
+                        <!-- Carte Utilisateur normal -->
+                        <div class="role-card" 
+                            data-role="user"
+                            style="background: white; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: var(--radius-md); padding: 20px; cursor: pointer; transition: all 0.3s;">
+                            <div style="text-align: center;">
+                                <div style="margin-bottom: 16px;">
+                                    <i class="bi bi-person-circle" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                </div>
+                                <h6 style="color: #6c757d; font-weight: 600; margin: 0 0 12px 0;">
+                                    Utilisateur Normal
+                                </h6>
+                                <div style="text-align: left; font-size: 13px; color: var(--muted);">
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Postuler aux offres d'emploi</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Gérer vos candidatures</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Recevoir des notifications</span>
+                                    </div>
+                                </div>
+                                <div class="role-badge" style="display: none; margin-top: 12px;">
+                                    <span style="background: #00B4D8; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                        <i class="bi bi-check-lg" style="margin-right: 4px;"></i>Sélectionné
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="radio" name="selected_role" value="user" style="display: none;">
+                        </div>
+                        
+                        <!-- Carte RH -->
+                        <div class="role-card" 
+                            data-role="rh"
+                            style="background: white; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: var(--radius-md); padding: 20px; cursor: pointer; transition: all 0.3s;">
+                            <div style="text-align: center;">
+                                <div style="margin-bottom: 16px;">
+                                    <i class="bi bi-briefcase-fill" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                </div>
+                                <h6 style="color: #6c757d; font-weight: 600; margin: 0 0 12px 0;">
+                                    Ressources Humaines
+                                </h6>
+                                <div style="text-align: left; font-size: 13px; color: var(--muted);">
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Gérer les offres d'emploi</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Examiner les candidatures</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Contacter les candidats</span>
+                                    </div>
+                                </div>
+                                <div class="role-badge" style="display: none; margin-top: 12px;">
+                                    <span style="background: #00B4D8; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                        <i class="bi bi-check-lg" style="margin-right: 4px;"></i>Sélectionné
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="radio" name="selected_role" value="rh" style="display: none;">
+                        </div>
+                        
+                        <!-- Carte Super Administrateur -->
+                        <div class="role-card" 
+                            data-role="superadmin"
+                            style="background: white; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: var(--radius-md); padding: 20px; cursor: pointer; transition: all 0.3s;">
+                            <div style="text-align: center;">
+                                <div style="margin-bottom: 16px;">
+                                    <i class="bi bi-shield-fill" style="font-size: 2.5rem; color: #6c757d;"></i>
+                                </div>
+                                <h6 style="color: #6c757d; font-weight: 600; margin: 0 0 12px 0;">
+                                    Super Administrateur
+                                </h6>
+                                <div style="text-align: left; font-size: 13px; color: var(--muted);">
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Accès complet au système</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Gérer tous les utilisateurs</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="bi bi-check-circle" style="margin-right: 6px; color: #1BB35E;"></i>
+                                        <span>Configuration avancée</span>
+                                    </div>
+                                </div>
+                                <div class="role-badge" style="display: none; margin-top: 12px;">
+                                    <span style="background: #00B4D8; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                        <i class="bi bi-check-lg" style="margin-right: 4px;"></i>Sélectionné
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="radio" name="selected_role" value="superadmin" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 12px;">
+                        <div style="color: var(--muted); font-size: 14px; margin-bottom: 4px;">
+                            <i class="bi bi-info-circle" style="margin-right: 6px;"></i>
+                            <strong>Note :</strong> Le changement de rôle prend effet immédiatement après l'enregistrement. 
+                            Vous serez redirigé vers l'interface correspondant au rôle sélectionné.
+                        </div>
+                        <div style="color: var(--muted); font-size: 14px;">
+                            <i class="bi bi-gear" style="margin-right: 6px;"></i>
+                            Rôle actuel: <span id="current-role" style="color: #023E8A; font-weight: 500;">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Adresse -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-geo-alt" style="margin-right: 8px;"></i>Adresse postale
+                </h5>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Adresse
+                        </label>
+                        <input type="text" 
+                               name="address" 
+                               value="{{ user.profile.address|default:'' }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Numéro et nom de rue">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Code postal
+                        </label>
+                        <input type="text" 
+                               name="postal_code" 
+                               value="{{ user.profile.postal_code|default:'' }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="75000">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px;">
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Ville
+                        </label>
+                        <input type="text" 
+                               name="city" 
+                               value="{{ user.profile.city|default:'' }}" 
+                               style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px;"
+                               placeholder="Ville">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                            Pays
+                        </label>
+                        <select name="country" 
+                            id="id_country"
+                            style="width: 100%; padding: 12px; border: 1px solid #00B4D8; border-radius: var(--radius-md); font-family: inherit; font-size: 14px; background: white;">
+                        <option value="">Sélectionnez un pays</option>
+                        <option value="AF" {% if user.profile.country == 'AF' %}selected{% endif %}>Afghanistan</option>
+                        <option value="ZA" {% if user.profile.country == 'ZA' %}selected{% endif %}>Afrique du Sud</option>
+                        <option value="AL" {% if user.profile.country == 'AL' %}selected{% endif %}>Albanie</option>
+                        <option value="DZ" {% if user.profile.country == 'DZ' %}selected{% endif %}>Algérie</option>
+                        <option value="DE" {% if user.profile.country == 'DE' %}selected{% endif %}>Allemagne</option>
+                        <option value="AD" {% if user.profile.country == 'AD' %}selected{% endif %}>Andorre</option>
+                        <option value="AO" {% if user.profile.country == 'AO' %}selected{% endif %}>Angola</option>
+                        <option value="AG" {% if user.profile.country == 'AG' %}selected{% endif %}>Antigua-et-Barbuda</option>
+                        <option value="SA" {% if user.profile.country == 'SA' %}selected{% endif %}>Arabie saoudite</option>
+                        <option value="AR" {% if user.profile.country == 'AR' %}selected{% endif %}>Argentine</option>
+                        <option value="AM" {% if user.profile.country == 'AM' %}selected{% endif %}>Arménie</option>
+                        <option value="AU" {% if user.profile.country == 'AU' %}selected{% endif %}>Australie</option>
+                        <option value="AT" {% if user.profile.country == 'AT' %}selected{% endif %}>Autriche</option>
+                        <option value="AZ" {% if user.profile.country == 'AZ' %}selected{% endif %}>Azerbaïdjan</option>
+                        <option value="BS" {% if user.profile.country == 'BS' %}selected{% endif %}>Bahamas</option>
+                        <option value="BH" {% if user.profile.country == 'BH' %}selected{% endif %}>Bahreïn</option>
+                        <option value="BD" {% if user.profile.country == 'BD' %}selected{% endif %}>Bangladesh</option>
+                        <option value="BB" {% if user.profile.country == 'BB' %}selected{% endif %}>Barbade</option>
+                        <option value="BE" {% if user.profile.country == 'BE' %}selected{% endif %}>Belgique</option>
+                        <option value="BZ" {% if user.profile.country == 'BZ' %}selected{% endif %}>Belize</option>
+                        <option value="BJ" {% if user.profile.country == 'BJ' %}selected{% endif %}>Bénin</option>
+                        <option value="BT" {% if user.profile.country == 'BT' %}selected{% endif %}>Bhoutan</option>
+                        <option value="BY" {% if user.profile.country == 'BY' %}selected{% endif %}>Biélorussie</option>
+                        <option value="MM" {% if user.profile.country == 'MM' %}selected{% endif %}>Birmanie</option>
+                        <option value="BO" {% if user.profile.country == 'BO' %}selected{% endif %}>Bolivie</option>
+                        <option value="BA" {% if user.profile.country == 'BA' %}selected{% endif %}>Bosnie-Herzégovine</option>
+                        <option value="BW" {% if user.profile.country == 'BW' %}selected{% endif %}>Botswana</option>
+                        <option value="BR" {% if user.profile.country == 'BR' %}selected{% endif %}>Brésil</option>
+                        <option value="BN" {% if user.profile.country == 'BN' %}selected{% endif %}>Brunei</option>
+                        <option value="BG" {% if user.profile.country == 'BG' %}selected{% endif %}>Bulgarie</option>
+                        <option value="BF" {% if user.profile.country == 'BF' %}selected{% endif %}>Burkina Faso</option>
+                        <option value="BI" {% if user.profile.country == 'BI' %}selected{% endif %}>Burundi</option>
+                        <option value="KH" {% if user.profile.country == 'KH' %}selected{% endif %}>Cambodge</option>
+                        <option value="CM" {% if user.profile.country == 'CM' %}selected{% endif %}>Cameroun</option>
+                        <option value="CA" {% if user.profile.country == 'CA' %}selected{% endif %}>Canada</option>
+                        <option value="CV" {% if user.profile.country == 'CV' %}selected{% endif %}>Cap-Vert</option>
+                        <option value="CL" {% if user.profile.country == 'CL' %}selected{% endif %}>Chili</option>
+                        <option value="CN" {% if user.profile.country == 'CN' %}selected{% endif %}>Chine</option>
+                        <option value="CY" {% if user.profile.country == 'CY' %}selected{% endif %}>Chypre</option>
+                        <option value="CO" {% if user.profile.country == 'CO' %}selected{% endif %}>Colombie</option>
+                        <option value="KM" {% if user.profile.country == 'KM' %}selected{% endif %}>Comores</option>
+                        <option value="CG" {% if user.profile.country == 'CG' %}selected{% endif %}>Congo-Brazzaville</option>
+                        <option value="CD" {% if user.profile.country == 'CD' %}selected{% endif %}>Congo-Kinshasa</option>
+                        <option value="KP" {% if user.profile.country == 'KP' %}selected{% endif %}>Corée du Nord</option>
+                        <option value="KR" {% if user.profile.country == 'KR' %}selected{% endif %}>Corée du Sud</option>
+                        <option value="CR" {% if user.profile.country == 'CR' %}selected{% endif %}>Costa Rica</option>
+                        <option value="CI" {% if user.profile.country == 'CI' %}selected{% endif %}>Côte d'Ivoire</option>
+                        <option value="HR" {% if user.profile.country == 'HR' %}selected{% endif %}>Croatie</option>
+                        <option value="CU" {% if user.profile.country == 'CU' %}selected{% endif %}>Cuba</option>
+                        <option value="DK" {% if user.profile.country == 'DK' %}selected{% endif %}>Danemark</option>
+                        <option value="DJ" {% if user.profile.country == 'DJ' %}selected{% endif %}>Djibouti</option>
+                        <option value="DM" {% if user.profile.country == 'DM' %}selected{% endif %}>Dominique</option>
+                        <option value="EG" {% if user.profile.country == 'EG' %}selected{% endif %}>Égypte</option>
+                        <option value="AE" {% if user.profile.country == 'AE' %}selected{% endif %}>Émirats arabes unis</option>
+                        <option value="EC" {% if user.profile.country == 'EC' %}selected{% endif %}>Équateur</option>
+                        <option value="ER" {% if user.profile.country == 'ER' %}selected{% endif %}>Érythrée</option>
+                        <option value="ES" {% if user.profile.country == 'ES' %}selected{% endif %}>Espagne</option>
+                        <option value="EE" {% if user.profile.country == 'EE' %}selected{% endif %}>Estonie</option>
+                        <option value="SZ" {% if user.profile.country == 'SZ' %}selected{% endif %}>Eswatini</option>
+                        <option value="US" {% if user.profile.country == 'US' %}selected{% endif %}>États-Unis</option>
+                        <option value="ET" {% if user.profile.country == 'ET' %}selected{% endif %}>Éthiopie</option>
+                        <option value="FJ" {% if user.profile.country == 'FJ' %}selected{% endif %}>Fidji</option>
+                        <option value="FI" {% if user.profile.country == 'FI' %}selected{% endif %}>Finlande</option>
+                        <option value="FR" {% if user.profile.country == 'FR' %}selected{% endif %}>France</option>
+                        <option value="GA" {% if user.profile.country == 'GA' %}selected{% endif %}>Gabon</option>
+                        <option value="GM" {% if user.profile.country == 'GM' %}selected{% endif %}>Gambie</option>
+                        <option value="GE" {% if user.profile.country == 'GE' %}selected{% endif %}>Géorgie</option>
+                        <option value="GH" {% if user.profile.country == 'GH' %}selected{% endif %}>Ghana</option>
+                        <option value="GR" {% if user.profile.country == 'GR' %}selected{% endif %}>Grèce</option>
+                        <option value="GD" {% if user.profile.country == 'GD' %}selected{% endif %}>Grenade</option>
+                        <option value="GT" {% if user.profile.country == 'GT' %}selected{% endif %}>Guatemala</option>
+                        <option value="GN" {% if user.profile.country == 'GN' %}selected{% endif %}>Guinée</option>
+                        <option value="GQ" {% if user.profile.country == 'GQ' %}selected{% endif %}>Guinée équatoriale</option>
+                        <option value="GW" {% if user.profile.country == 'GW' %}selected{% endif %}>Guinée-Bissau</option>
+                        <option value="GY" {% if user.profile.country == 'GY' %}selected{% endif %}>Guyana</option>
+                        <option value="HT" {% if user.profile.country == 'HT' %}selected{% endif %}>Haïti</option>
+                        <option value="HN" {% if user.profile.country == 'HN' %}selected{% endif %}>Honduras</option>
+                        <option value="HU" {% if user.profile.country == 'HU' %}selected{% endif %}>Hongrie</option>
+                        <option value="IN" {% if user.profile.country == 'IN' %}selected{% endif %}>Inde</option>
+                        <option value="ID" {% if user.profile.country == 'ID' %}selected{% endif %}>Indonésie</option>
+                        <option value="IQ" {% if user.profile.country == 'IQ' %}selected{% endif %}>Irak</option>
+                        <option value="IR" {% if user.profile.country == 'IR' %}selected{% endif %}>Iran</option>
+                        <option value="IE" {% if user.profile.country == 'IE' %}selected{% endif %}>Irlande</option>
+                        <option value="IS" {% if user.profile.country == 'IS' %}selected{% endif %}>Islande</option>
+                        <option value="IT" {% if user.profile.country == 'IT' %}selected{% endif %}>Italie</option>
+                        <option value="JM" {% if user.profile.country == 'JM' %}selected{% endif %}>Jamaïque</option>
+                        <option value="JP" {% if user.profile.country == 'JP' %}selected{% endif %}>Japon</option>
+                        <option value="JO" {% if user.profile.country == 'JO' %}selected{% endif %}>Jordanie</option>
+                        <option value="KZ" {% if user.profile.country == 'KZ' %}selected{% endif %}>Kazakhstan</option>
+                        <option value="KE" {% if user.profile.country == 'KE' %}selected{% endif %}>Kenya</option>
+                        <option value="KG" {% if user.profile.country == 'KG' %}selected{% endif %}>Kirghizistan</option>
+                        <option value="KI" {% if user.profile.country == 'KI' %}selected{% endif %}>Kiribati</option>
+                        <option value="KW" {% if user.profile.country == 'KW' %}selected{% endif %}>Koweït</option>
+                        <option value="LA" {% if user.profile.country == 'LA' %}selected{% endif %}>Laos</option>
+                        <option value="LS" {% if user.profile.country == 'LS' %}selected{% endif %}>Lesotho</option>
+                        <option value="LV" {% if user.profile.country == 'LV' %}selected{% endif %}>Lettonie</option>
+                        <option value="LB" {% if user.profile.country == 'LB' %}selected{% endif %}>Liban</option>
+                        <option value="LR" {% if user.profile.country == 'LR' %}selected{% endif %}>Libéria</option>
+                        <option value="LY" {% if user.profile.country == 'LY' %}selected{% endif %}>Libye</option>
+                        <option value="LI" {% if user.profile.country == 'LI' %}selected{% endif %}>Liechtenstein</option>
+                        <option value="LT" {% if user.profile.country == 'LT' %}selected{% endif %}>Lituanie</option>
+                        <option value="LU" {% if user.profile.country == 'LU' %}selected{% endif %}>Luxembourg</option>
+                        <option value="MG" {% if user.profile.country == 'MG' %}selected{% endif %}>Madagascar</option>
+                        <option value="MY" {% if user.profile.country == 'MY' %}selected{% endif %}>Malaisie</option>
+                        <option value="MW" {% if user.profile.country == 'MW' %}selected{% endif %}>Malawi</option>
+                        <option value="MV" {% if user.profile.country == 'MV' %}selected{% endif %}>Maldives</option>
+                        <option value="ML" {% if user.profile.country == 'ML' %}selected{% endif %}>Mali</option>
+                        <option value="MT" {% if user.profile.country == 'MT' %}selected{% endif %}>Malte</option>
+                        <option value="MA" {% if user.profile.country == 'MA' %}selected{% endif %}>Maroc</option>
+                        <option value="MH" {% if user.profile.country == 'MH' %}selected{% endif %}>Marshall</option>
+                        <option value="MU" {% if user.profile.country == 'MU' %}selected{% endif %}>Maurice</option>
+                        <option value="MR" {% if user.profile.country == 'MR' %}selected{% endif %}>Mauritanie</option>
+                        <option value="MX" {% if user.profile.country == 'MX' %}selected{% endif %}>Mexique</option>
+                        <option value="FM" {% if user.profile.country == 'FM' %}selected{% endif %}>Micronésie</option>
+                        <option value="MD" {% if user.profile.country == 'MD' %}selected{% endif %}>Moldavie</option>
+                        <option value="MC" {% if user.profile.country == 'MC' %}selected{% endif %}>Monaco</option>
+                        <option value="MN" {% if user.profile.country == 'MN' %}selected{% endif %}>Mongolie</option>
+                        <option value="ME" {% if user.profile.country == 'ME' %}selected{% endif %}>Monténégro</option>
+                        <option value="MZ" {% if user.profile.country == 'MZ' %}selected{% endif %}>Mozambique</option>
+                        <option value="NA" {% if user.profile.country == 'NA' %}selected{% endif %}>Namibie</option>
+                        <option value="NR" {% if user.profile.country == 'NR' %}selected{% endif %}>Nauru</option>
+                        <option value="NP" {% if user.profile.country == 'NP' %}selected{% endif %}>Népal</option>
+                        <option value="NI" {% if user.profile.country == 'NI' %}selected{% endif %}>Nicaragua</option>
+                        <option value="NE" {% if user.profile.country == 'NE' %}selected{% endif %}>Niger</option>
+                        <option value="NG" {% if user.profile.country == 'NG' %}selected{% endif %}>Nigeria</option>
+                        <option value="NO" {% if user.profile.country == 'NO' %}selected{% endif %}>Norvège</option>
+                        <option value="NZ" {% if user.profile.country == 'NZ' %}selected{% endif %}>Nouvelle-Zélande</option>
+                        <option value="OM" {% if user.profile.country == 'OM' %}selected{% endif %}>Oman</option>
+                        <option value="UG" {% if user.profile.country == 'UG' %}selected{% endif %}>Ouganda</option>
+                        <option value="UZ" {% if user.profile.country == 'UZ' %}selected{% endif %}>Ouzbékistan</option>
+                        <option value="PK" {% if user.profile.country == 'PK' %}selected{% endif %}>Pakistan</option>
+                        <option value="PW" {% if user.profile.country == 'PW' %}selected{% endif %}>Palaos</option>
+                        <option value="PS" {% if user.profile.country == 'PS' %}selected{% endif %}>Palestine</option>
+                        <option value="PA" {% if user.profile.country == 'PA' %}selected{% endif %}>Panama</option>
+                        <option value="PG" {% if user.profile.country == 'PG' %}selected{% endif %}>Papouasie-Nouvelle-Guinée</option>
+                        <option value="PY" {% if user.profile.country == 'PY' %}selected{% endif %}>Paraguay</option>
+                        <option value="NL" {% if user.profile.country == 'NL' %}selected{% endif %}>Pays-Bas</option>
+                        <option value="PE" {% if user.profile.country == 'PE' %}selected{% endif %}>Pérou</option>
+                        <option value="PH" {% if user.profile.country == 'PH' %}selected{% endif %}>Philippines</option>
+                        <option value="PL" {% if user.profile.country == 'PL' %}selected{% endif %}>Pologne</option>
+                        <option value="PT" {% if user.profile.country == 'PT' %}selected{% endif %}>Portugal</option>
+                        <option value="QA" {% if user.profile.country == 'QA' %}selected{% endif %}>Qatar</option>
+                        <option value="RO" {% if user.profile.country == 'RO' %}selected{% endif %}>Roumanie</option>
+                        <option value="GB" {% if user.profile.country == 'GB' %}selected{% endif %}>Royaume-Uni</option>
+                        <option value="RU" {% if user.profile.country == 'RU' %}selected{% endif %}>Russie</option>
+                        <option value="RW" {% if user.profile.country == 'RW' %}selected{% endif %}>Rwanda</option>
+                        <option value="KN" {% if user.profile.country == 'KN' %}selected{% endif %}>Saint-Christophe-et-Niévès</option>
+                        <option value="SM" {% if user.profile.country == 'SM' %}selected{% endif %}>Saint-Marin</option>
+                        <option value="VC" {% if user.profile.country == 'VC' %}selected{% endif %}>Saint-Vincent-et-les-Grenadines</option>
+                        <option value="LC" {% if user.profile.country == 'LC' %}selected{% endif %}>Sainte-Lucie</option>
+                        <option value="SV" {% if user.profile.country == 'SV' %}selected{% endif %}>Salvador</option>
+                        <option value="WS" {% if user.profile.country == 'WS' %}selected{% endif %}>Samoa</option>
+                        <option value="ST" {% if user.profile.country == 'ST' %}selected{% endif %}>Sao Tomé-et-Principe</option>
+                        <option value="SN" {% if user.profile.country == 'SN' %}selected{% endif %}>Sénégal</option>
+                        <option value="RS" {% if user.profile.country == 'RS' %}selected{% endif %}>Serbie</option>
+                        <option value="SC" {% if user.profile.country == 'SC' %}selected{% endif %}>Seychelles</option>
+                        <option value="SL" {% if user.profile.country == 'SL' %}selected{% endif %}>Sierra Leone</option>
+                        <option value="SG" {% if user.profile.country == 'SG' %}selected{% endif %}>Singapour</option>
+                        <option value="SK" {% if user.profile.country == 'SK' %}selected{% endif %}>Slovaquie</option>
+                        <option value="SI" {% if user.profile.country == 'SI' %}selected{% endif %}>Slovénie</option>
+                        <option value="SO" {% if user.profile.country == 'SO' %}selected{% endif %}>Somalie</option>
+                        <option value="SD" {% if user.profile.country == 'SD' %}selected{% endif %}>Soudan</option>
+                        <option value="SS" {% if user.profile.country == 'SS' %}selected{% endif %}>Soudan du Sud</option>
+                        <option value="LK" {% if user.profile.country == 'LK' %}selected{% endif %}>Sri Lanka</option>
+                        <option value="SE" {% if user.profile.country == 'SE' %}selected{% endif %}>Suède</option>
+                        <option value="CH" {% if user.profile.country == 'CH' %}selected{% endif %}>Suisse</option>
+                        <option value="SR" {% if user.profile.country == 'SR' %}selected{% endif %}>Suriname</option>
+                        <option value="SY" {% if user.profile.country == 'SY' %}selected{% endif %}>Syrie</option>
+                        <option value="TJ" {% if user.profile.country == 'TJ' %}selected{% endif %}>Tadjikistan</option>
+                        <option value="TZ" {% if user.profile.country == 'TZ' %}selected{% endif %}>Tanzanie</option>
+                        <option value="TD" {% if user.profile.country == 'TD' %}selected{% endif %}>Tchad</option>
+                        <option value="CZ" {% if user.profile.country == 'CZ' %}selected{% endif %}>Tchéquie</option>
+                        <option value="TH" {% if user.profile.country == 'TH' %}selected{% endif %}>Thaïlande</option>
+                        <option value="TL" {% if user.profile.country == 'TL' %}selected{% endif %}>Timor oriental</option>
+                        <option value="TG" {% if user.profile.country == 'TG' %}selected{% endif %}>Togo</option>
+                        <option value="TO" {% if user.profile.country == 'TO' %}selected{% endif %}>Tonga</option>
+                        <option value="TT" {% if user.profile.country == 'TT' %}selected{% endif %}>Trinité-et-Tobago</option>
+                        <option value="TN" {% if user.profile.country == 'TN' %}selected{% endif %}>Tunisie</option>
+                        <option value="TM" {% if user.profile.country == 'TM' %}selected{% endif %}>Turkménistan</option>
+                        <option value="TR" {% if user.profile.country == 'TR' %}selected{% endif %}>Turquie</option>
+                        <option value="TV" {% if user.profile.country == 'TV' %}selected{% endif %}>Tuvalu</option>
+                        <option value="UA" {% if user.profile.country == 'UA' %}selected{% endif %}>Ukraine</option>
+                        <option value="UY" {% if user.profile.country == 'UY' %}selected{% endif %}>Uruguay</option>
+                        <option value="VU" {% if user.profile.country == 'VU' %}selected{% endif %}>Vanuatu</option>
+                        <option value="VA" {% if user.profile.country == 'VA' %}selected{% endif %}>Vatican</option>
+                        <option value="VE" {% if user.profile.country == 'VE' %}selected{% endif %}>Venezuela</option>
+                        <option value="VN" {% if user.profile.country == 'VN' %}selected{% endif %}>Viêt Nam</option>
+                        <option value="YE" {% if user.profile.country == 'YE' %}selected{% endif %}>Yémen</option>
+                        <option value="ZM" {% if user.profile.country == 'ZM' %}selected{% endif %}>Zambie</option>
+                        <option value="ZW" {% if user.profile.country == 'ZW' %}selected{% endif %}>Zimbabwe</option>
+                    </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section CV et Documents -->
+            <div style="margin-bottom: 30px;">
+                <h5 style="color: #023E8A; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #00B4D8;">
+                    <i class="bi bi-file-earmark-pdf" style="margin-right: 8px;"></i>CV et Documents
+                </h5>
+                
+                <!-- CV actuel -->
+                {% if user.profile.cv %}
+                <div style="border: 1px solid #00B4D8; border-radius: var(--radius-md); background: rgba(0, 180, 216, 0.05); padding: 16px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="bi bi-file-earmark-pdf-fill" style="color: #FF6B6B; font-size: 1.5rem;"></i>
+                            <div>
+                                <strong style="display: block; color: var(--text);">{{ user.profile.cv.name|default:"CV actuel" }}</strong>
+                                <small style="color: var(--muted);">Téléchargé le {{ user.profile.cv_upload_date|date:"d/m/Y" }}</small>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ user.profile.cv.url }}" target="_blank" class="btn-custom-outline" style="padding: 6px 12px;">
+                                <i class="bi bi-eye" style="margin-right: 4px;"></i>Voir
+                            </a>
+                            <a href="{{ user.profile.cv.url }}" download class="btn-custom-primary" style="padding: 6px 12px;">
+                                <i class="bi bi-download" style="margin-right: 4px;"></i>Télécharger
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: rgba(255, 158, 0, 0.1); border-left: 4px solid #FF9E00; padding: 12px; border-radius: var(--radius-md); margin-bottom: 20px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <i class="bi bi-exclamation-triangle" style="color: #FF9E00; margin-top: 2px;"></i>
+                        <div>
+                            <strong style="display: block; color: #023E8A;">Attention :</strong>
+                            <span style="color: var(--muted); font-size: 14px;">Téléverser un nouveau CV écrasera l'ancien.</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Upload CV -->
+                <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 8px; color: var(--text);">
+                        {% if user.profile.cv %}Remplacer le CV{% else %}Téléverser votre CV{% endif %}
+                    </label>
+                    <div style="display: flex; border: 1px solid #00B4D8; border-radius: var(--radius-md); overflow: hidden;">
+                        <input type="file" 
+                               name="cv" 
+                               style="flex: 1; padding: 12px; border: none; font-family: inherit; font-size: 14px;"
+                               accept=".pdf,.doc,.docx"
+                               onchange="document.getElementById('file-name').textContent = this.files[0]?.name || 'Aucun fichier sélectionné'">
+                        <button type="button" class="btn-custom-primary" style="border-radius: 0; white-space: nowrap;">
+                            <i class="bi bi-upload" style="margin-right: 4px;"></i>Parcourir
+                        </button>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <div style="color: var(--muted); font-size: 13px; margin-bottom: 4px;">
+                            <i class="bi bi-info-circle" style="margin-right: 4px;"></i>
+                            Formats acceptés : PDF, DOC, DOCX (max 5MB)
+                        </div>
+                        <div style="color: var(--muted); font-size: 13px;">
+                            <i class="bi bi-lightbulb" style="margin-right: 4px;"></i>
+                            Conseil : Nommez votre fichier "CV_VotreNom.pdf" pour plus de clarté
+                        </div>
+                        <div id="file-name" style="color: #023E8A; font-size: 13px; margin-top: 8px; font-weight: 500;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div style="border-top: 1px solid rgba(148, 163, 184, 0.2); padding-top: 24px; margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <button type="reset" class="btn-custom-outline" style="padding: 10px 20px;">
+                            <i class="bi bi-arrow-clockwise" style="margin-right: 8px;"></i>Réinitialiser
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px;">
+                        <a href="{% url 'profile' %}" class="btn-custom-outline" style="padding: 10px 20px; border-color: var(--danger); color: var(--danger);">
+                            <i class="bi bi-x-circle" style="margin-right: 8px;"></i>Annuler
+                        </a>
+                        
+                        <button type="submit" class="btn-custom-primary" style="padding: 10px 20px; font-weight: 500;">
+                            <i class="bi bi-check-circle" style="margin-right: 8px;"></i>Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script pour la sélection des rôles -->
+<script>
+    function selectRole(role) {
+        console.log('Sélection du rôle:', role);
+        
+        // Réinitialiser toutes les cartes
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+            card.style.backgroundColor = 'white';
+            card.querySelector('i').style.color = '#6c757d';
+            card.querySelector('h6').style.color = '#6c757d';
+            card.querySelector('.role-badge').style.display = 'none';
+        });
+        
+        // Mettre en surbrillance la carte sélectionnée
+        const selectedCard = document.querySelector(`.role-card[data-role="${role}"]`);
+        if (selectedCard) {
+            selectedCard.style.borderColor = '#00B4D8';
+            selectedCard.style.borderWidth = '2px';
+            selectedCard.style.backgroundColor = 'rgba(0, 180, 216, 0.1)';
+            selectedCard.querySelector('i').style.color = '#0077B6';
+            selectedCard.querySelector('h6').style.color = '#023E8A';
+            selectedCard.querySelector('.role-badge').style.display = 'block';
+            
+            // Cochez le radio bouton
+            const radioInput = selectedCard.querySelector('input[type="radio"]');
+            if (radioInput) {
+                radioInput.checked = true;
+                console.log('Radio bouton coché:', radioInput.value);
+            }
+        }
+        
+        // Afficher le rôle sélectionné
+        let roleName = 'Non sélectionné';
+        switch(role) {
+            case 'user':
+                roleName = 'Utilisateur Normal';
+                break;
+            case 'rh':
+                roleName = 'Ressources Humaines';
+                break;
+            case 'superadmin':
+                roleName = 'Super Administrateur';
+                break;
+        }
+        document.getElementById('current-role').textContent = roleName;
+    }
+    
+    // Ajouter des événements de clic aux cartes
+    document.querySelectorAll('.role-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const role = this.getAttribute('data-role');
+            selectRole(role);
+        });
+    });
+    
+    // Initialiser avec le rôle par défaut
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pour le test, initialiser avec 'user' par défaut
+        // En production, vous devriez utiliser la valeur du serveur
+        selectRole('{{ user.profile.selected_role|default:"user" }}');
+        
+        // Gérer le bouton "Parcourir" pour le fichier
+        document.querySelector('.btn-custom-primary').addEventListener('click', function() {
+            const fileInput = document.querySelector('input[name="cv"]');
+            fileInput.click();
+        });
+        
+        // Gérer l'affichage du nom du fichier
+        document.querySelector('input[name="cv"]').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'Aucun fichier sélectionné';
+            document.getElementById('file-name').textContent = `Fichier sélectionné : ${fileName}`;
+        });
+    });
+</script>
+
+<!-- Style supplémentaire pour les cartes de rôle -->
+<style>
+    .role-card:hover {
+        border-color: #00B4D8 !important;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-soft);
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #00B4D8 !important;
+        box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 20px 16px;
+        }
+        
+        .role-card {
+            min-height: 240px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,338 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Créer une Administration{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="padding: 32px 5vw 48px; min-height: calc(100vh - 64px);">
+    <div class="row justify-content-center" style="display: flex; justify-content: center; margin: 0 -15px;">
+        <div class="col-lg-8" style="flex: 0 0 66.666667%; max-width: 66.666667%; padding: 0 15px;">
+            <!-- En-tête -->
+            <div class="d-flex justify-content-between align-items-center mb-5" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                <div>
+                    <h1 class="mb-2" style="font-weight: 800; color: var(--primary); margin-bottom: 0.5rem;">
+                        <i class="bi bi-plus-circle me-3"></i>Créer une Administration
+                    </h1>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <a href="{% url 'gestion_administrations' %}" style="color: var(--muted); text-decoration: none; font-size: 0.9rem;">
+                            <i class="bi bi-buildings me-1"></i>Gestion Admin
+                        </a>
+                        <span style="color: var(--muted);">›</span>
+                        <span style="color: var(--primary); font-weight: 500; font-size: 0.9rem;">Créer</span>
+                    </div>
+                </div>
+                <a href="{% url 'gestion_administrations' %}" 
+                   style="background: var(--card-bg); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.4); padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.3s ease;">
+                    <i class="bi bi-arrow-left me-2"></i>Retour
+                </a>
+            </div>
+
+            <!-- Carte du formulaire -->
+            <div style="background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-soft); border: 1px solid rgba(148, 163, 184, 0.1); overflow: hidden;">
+                <div style="padding: 30px; border-bottom: 1px solid rgba(148, 163, 184, 0.1);">
+                    <h5 style="color: var(--text); font-weight: 600; margin-bottom: 0; display: flex; align-items: center;">
+                        <i class="bi bi-building me-3" style="color: var(--primary);"></i>Nouvelle Administration
+                    </h5>
+                </div>
+                <div style="padding: 30px;">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div style="background: linear-gradient(135deg, rgba(229, 57, 53, 0.1), rgba(229, 57, 53, 0.15)); border-left: 4px solid var(--danger); border-radius: 12px; padding: 15px; margin-bottom: 25px;">
+                            {% for error in form.non_field_errors %}
+                            <div style="color: var(--danger); font-weight: 500; display: flex; align-items: center;">
+                                <i class="bi bi-exclamation-circle me-2"></i>{{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row g-4" style="display: flex; flex-wrap: wrap; margin: -0.5rem; margin-bottom: 1.5rem;">
+                            <!-- Nom -->
+                            <div class="col-md-12" style="flex: 0 0 100%; max-width: 100%; padding: 0.5rem;">
+                                <label style="display: block; color: var(--text); font-weight: 600; margin-bottom: 12px; font-size: 0.95rem;">
+                                    <i class="bi bi-building me-2" style="color: var(--primary);"></i>
+                                    {{ form.nom.label }} *
+                                </label>
+                                {{ form.nom }}
+                                {% if form.nom.errors %}
+                                <div style="color: var(--danger); font-size: 0.85rem; margin-top: 8px; display: flex; align-items: center;">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    {% for error in form.nom.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Ville -->
+                            <div class="col-md-6" style="flex: 0 0 50%; max-width: 50%; padding: 0.5rem;">
+                                <label style="display: block; color: var(--text); font-weight: 600; margin-bottom: 12px; font-size: 0.95rem;">
+                                    <i class="bi bi-geo-alt me-2" style="color: var(--primary);"></i>
+                                    {{ form.ville.label }} *
+                                </label>
+                                {{ form.ville }}
+                                {% if form.ville.errors %}
+                                <div style="color: var(--danger); font-size: 0.85rem; margin-top: 8px; display: flex; align-items: center;">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    {% for error in form.ville.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Type -->
+                            <div class="col-md-6" style="flex: 0 0 50%; max-width: 50%; padding: 0.5rem;">
+                                <label style="display: block; color: var(--text); font-weight: 600; margin-bottom: 12px; font-size: 0.95rem;">
+                                    <i class="bi bi-tag me-2" style="color: var(--primary);"></i>
+                                    {{ form.type_administration.label }} *
+                                </label>
+                                {{ form.type_administration }}
+                                {% if form.type_administration.errors %}
+                                <div style="color: var(--danger); font-size: 0.85rem; margin-top: 8px; display: flex; align-items: center;">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    {% for error in form.type_administration.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Adresse -->
+                            <div class="col-12" style="flex: 0 0 100%; max-width: 100%; padding: 0.5rem;">
+                                <label style="display: block; color: var(--text); font-weight: 600; margin-bottom: 12px; font-size: 0.95rem;">
+                                    <i class="bi bi-card-text me-2" style="color: var(--primary);"></i>
+                                    {{ form.adresse.label }}
+                                </label>
+                                {{ form.adresse }}
+                                {% if form.adresse.errors %}
+                                <div style="color: var(--danger); font-size: 0.85rem; margin-top: 8px; display: flex; align-items: center;">
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+                                    {% for error in form.adresse.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons -->
+                        <div style="display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(148, 163, 184, 0.1);">
+                            <a href="{% url 'gestion_administrations' %}" 
+                               style="background: var(--card-bg); color: var(--text); border: 1px solid rgba(148, 163, 184, 0.4); padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.3s ease;">
+                                <i class="bi bi-x me-2"></i>Annuler
+                            </a>
+                            <button type="submit" 
+                                    style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; padding: 12px 28px; border-radius: 12px; font-weight: 600; display: inline-flex; align-items: center; box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3); transition: all 0.3s ease; cursor: pointer;">
+                                <i class="bi bi-save me-2"></i>Créer l'administration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Aide -->
+            <div style="background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(26, 115, 232, 0.15)); border-left: 4px solid var(--primary); border-radius: 12px; padding: 25px; margin-top: 30px;">
+                <div class="d-flex align-items-start" style="display: flex; align-items: flex-start;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 20px; flex-shrink: 0;">
+                        <i class="bi bi-info-circle text-white" style="font-size: 1.25rem;"></i>
+                    </div>
+                    <div>
+                        <h6 style="color: var(--text); font-weight: 600; margin-bottom: 15px;">Informations importantes</h6>
+                        <ul style="margin: 0; padding-left: 20px; color: var(--muted);">
+                            <li style="margin-bottom: 10px;">Les champs marqués d'un * sont obligatoires</li>
+                            <li style="margin-bottom: 10px;">Le nom doit être complet et officiel</li>
+                            <li style="margin-bottom: 10px;">La ville correspond au siège principal</li>
+                            <li>Choisissez le type approprié pour une meilleure catégorisation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Style les champs de formulaire
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        // Ajouter le style de base
+        input.style.background = 'var(--card-bg)';
+        input.style.color = 'var(--text)';
+        input.style.border = '2px solid rgba(148, 163, 184, 0.3)';
+        input.style.borderRadius = '12px';
+        input.style.padding = '14px 18px';
+        input.style.fontSize = '0.95rem';
+        input.style.transition = 'all 0.3s ease';
+        input.style.outline = 'none';
+        input.style.width = '100%';
+        
+        // Ajouter les effets de focus
+        input.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--primary)';
+            this.style.boxShadow = '0 0 0 3px rgba(26, 115, 232, 0.1)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+            this.style.boxShadow = 'none';
+        });
+    });
+    
+    // Style spécifique pour select
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.style.appearance = 'none';
+        select.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E")`;
+        select.style.backgroundRepeat = 'no-repeat';
+        select.style.backgroundPosition = 'right 18px center';
+        select.style.backgroundSize = '16px';
+        select.style.paddingRight = '50px';
+    });
+    
+    // Effet hover sur le bouton Retour
+    const backBtn = document.querySelector('a[href*="liste_administrations"]:first-of-type');
+    if (backBtn) {
+        backBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(148, 163, 184, 0.1)';
+            this.style.transform = 'translateY(-1px)';
+            this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+        });
+        
+        backBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'var(--card-bg)';
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    }
+    
+    // Effet hover sur le bouton Annuler
+    const cancelBtn = document.querySelector('a[href*="liste_administrations"]:last-of-type');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(148, 163, 184, 0.1)';
+            this.style.transform = 'translateY(-1px)';
+            this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+        });
+        
+        cancelBtn.addEventListener('mouseleave', function() {
+            this.style.background = 'var(--card-bg)';
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    }
+    
+    // Effet hover sur le bouton Créer
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 12px 25px rgba(26, 115, 232, 0.4)';
+        });
+        
+        submitBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 8px 20px rgba(26, 115, 232, 0.3)';
+        });
+    }
+    
+    // Focus sur le premier champ
+    const firstInput = document.querySelector('input:not([type="hidden"])');
+    if (firstInput) {
+        firstInput.focus();
+    }
+    
+    // Validation en temps réel
+    const form = document.querySelector('form');
+    if (form) {
+        const requiredInputs = form.querySelectorAll('input[required], select[required]');
+        
+        requiredInputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.style.borderColor = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'rgba(148, 163, 184, 0.3)';
+                }
+            });
+        });
+    }
+});
+</script>
+
+<style>
+    /* Styles supplémentaires */
+    input::placeholder,
+    textarea::placeholder {
+        color: rgba(148, 163, 184, 0.7) !important;
+    }
+    
+    /* Animation pour les champs de formulaire */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .row > div {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .row > div:nth-child(1) { animation-delay: 0.1s; }
+    .row > div:nth-child(2) { animation-delay: 0.2s; }
+    .row > div:nth-child(3) { animation-delay: 0.3s; }
+    .row > div:nth-child(4) { animation-delay: 0.4s; }
+    
+    /* Style pour textarea */
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px !important;
+        }
+        
+        h1 {
+            font-size: 1.8rem !important;
+        }
+        
+        .col-lg-8 {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            padding: 0 10px !important;
+        }
+        
+        .d-flex.justify-content-between.align-items-center.mb-5 {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 20px;
+        }
+        
+        div[style*="display: flex; justify-content: space-between"] {
+            flex-direction: column !important;
+            gap: 20px;
+        }
+        
+        a, button {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+    }
+</style>
+{% endblock %}

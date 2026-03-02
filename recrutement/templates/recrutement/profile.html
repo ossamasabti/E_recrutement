@@ -1,0 +1,226 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+
+{% block title %}Mon Profil - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- En-tête -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h1 style="color: #023E8A; font-size: 28px; font-weight: 700; margin: 0 0 8px 0;">
+                <i class="bi bi-person-circle" style="margin-right: 10px;"></i>Mon Profil
+            </h1>
+            <p style="color: var(--muted); margin: 0;">Gérez vos informations personnelles</p>
+        </div>
+        <div style="text-align: right;">
+            <p style="color: #0077B6; margin: 0; font-size: 14px;">
+                <i class="bi bi-clock-history" style="margin-right: 6px;"></i> 
+                Membre depuis {{ user.date_joined|date:"d/m/Y" }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Deux colonnes sur desktop, une sur mobile -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+        <!-- Pour desktop : afficher côte à côte -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Contenu principal en deux parties -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- Première ligne : Profil + Détails -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Profil gauche -->
+                    <div style="flex: 1;">
+                        <div class="offre-card" style="padding: 24px;">
+                            <!-- Avatar -->
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 4px solid #FF9E00; margin: 0 auto 16px;">
+                                    <img src="{% static 'images/profile_logo.jpg' %}"
+                                         alt="Photo de profil"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                
+                                <h3 style="color: #023E8A; font-weight: 600; margin: 0 0 8px 0;">{{ user.get_full_name|default:user.username }}</h3>
+                                <p style="color: var(--muted); margin: 0 0 16px 0;">@{{ user.username }}</p>
+                                
+                                <div style="display: inline-block; background-color: #FF9E00; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                    <i class="bi bi-shield-check" style="margin-right: 4px;"></i>Membre vérifié
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;">
+                                <div style="text-align: center; padding: 12px; border-radius: var(--radius-md); background-color: rgba(0, 180, 216, 0.1);">
+                                    <div style="color: #0077B6; font-weight: 600; font-size: 18px; margin-bottom: 4px;">{{ stats_candidatures.en_cours }}</div>
+                                    <div style="color: #023E8A; font-size: 12px;">En cours</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; border-radius: var(--radius-md); background-color: rgba(2, 62, 138, 0.1);">
+                                    <div style="color: #023E8A; font-weight: 600; font-size: 18px; margin-bottom: 4px;">{{ stats_candidatures.acceptees }}</div>
+                                    <div style="color: #023E8A; font-size: 12px;">Acceptées</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; border-radius: var(--radius-md); background-color: rgba(255, 158, 0, 0.1);">
+                                    <div style="color: #FF9E00; font-weight: 600; font-size: 18px; margin-bottom: 4px;">{{ stats_candidatures.total }}</div>
+                                    <div style="color: #023E8A; font-size: 12px;">Total</div>
+                                </div>
+                                <div style="text-align: center; padding: 12px; border-radius: var(--radius-md); background-color: rgba(220, 53, 69, 0.1);">
+                                    <div style="color: #DC3545; font-weight: 600; font-size: 18px; margin-bottom: 4px;">{{ stats_candidatures.rejetees }}</div>
+                                    <div style="color: #023E8A; font-size: 12px;">Rejetées</div>
+                                </div>
+                            </div>
+
+                            <!-- Contact -->
+                            <div style="margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                    <i class="bi bi-envelope" style="color: #00B4D8; width: 20px; margin-right: 10px;"></i>
+                                    <span style="color: #023E8A;">{{ user.email }}</span>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <i class="bi bi-clock-history" style="color: #00B4D8; width: 20px; margin-right: 10px;"></i>
+                                    <span style="color: #023E8A; font-size: 14px;">Dernière connexion : {{ user.last_login|date:"d/m/Y H:i" }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Boutons -->
+                            <div style="display: grid; gap: 12px;">
+                                <a href="{% url 'edit_profile' %}" class="btn-custom-primary" style="text-align: center; padding: 12px;">
+                                    <i class="bi bi-person-edit" style="margin-right: 8px;"></i>Modifier le profil
+                                </a>
+                                <a href="{% url 'logout' %}" class="btn-custom-outline" style="text-align: center; padding: 12px; border-color: #FF6D00; color: #FF6D00;">
+                                    <i class="bi bi-box-arrow-right" style="margin-right: 8px;"></i>Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Détails droite -->
+                    <div style="flex: 2;">
+                        <div class="offre-card" style="padding: 24px;">
+                            <h2 style="color: #0077B6; font-size: 20px; font-weight: 600; margin: 0 0 20px 0; display: flex; align-items: center;">
+                                <i class="bi bi-person-lines-fill" style="margin-right: 10px;"></i>Détails du compte
+                            </h2>
+                            
+                            <!-- Infos -->
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                                <!-- Nom complet -->
+                                <div>
+                                    <label style="display: block; color: #023E8A; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Nom complet</label>
+                                    <div style="padding: 12px; background-color: rgba(0, 180, 216, 0.05); border-radius: var(--radius-md); color: #023E8A;">
+                                        {{ user.get_full_name|default:"Non renseigné" }}
+                                    </div>
+                                </div>
+
+                                <!-- Rôle -->
+                                <div>
+                                    <label style="display: block; color: #023E8A; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Rôle actuel</label>
+                                    <div style="padding: 12px; background-color: rgba(0, 180, 216, 0.05); border-radius: var(--radius-md);">
+                                        {% if user.profile.selected_role == 'user' %}
+                                            <span style="display: inline-flex; align-items: center; background-color: #0077B6; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                                <i class="bi bi-person-circle" style="margin-right: 6px;"></i>Utilisateur Normal
+                                            </span>
+                                        {% elif user.profile.selected_role == 'rh' %}
+                                            <span style="display: inline-flex; align-items: center; background-color: #FF9E00; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                                <i class="bi bi-briefcase-fill" style="margin-right: 6px;"></i>Ressources Humaines
+                                            </span>
+                                        {% elif user.profile.selected_role == 'superadmin' %}
+                                            <span style="display: inline-flex; align-items: center; background-color: #023E8A; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                                <i class="bi bi-shield-fill" style="margin-right: 6px;"></i>Super Administrateur
+                                            </span>
+                                        {% else %}
+                                            <span style="display: inline-flex; align-items: center; background-color: #00B4D8; color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                                                <i class="bi bi-person" style="margin-right: 6px;"></i>{{ user.profile.selected_role|default:"Utilisateur" }}
+                                            </span>
+                                        {% endif %}
+                                        
+                                        <p style="color: #023E8A; margin: 12px 0 0 0; font-size: 14px;">
+                                            <i class="bi bi-info-circle" style="color: #00B4D8; margin-right: 6px;"></i>
+                                            {% if user.profile.selected_role == 'user' %}
+                                                Vous pouvez postuler aux offres et gérer vos candidatures.
+                                            {% elif user.profile.selected_role == 'rh' %}
+                                                Vous pouvez gérer les offres d'emploi et les candidatures.
+                                            {% elif user.profile.selected_role == 'superadmin' %}
+                                                Vous avez un accès complet à toutes les fonctionnalités.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Email et date -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                    <div>
+                                        <label style="display: block; color: #023E8A; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Email</label>
+                                        <div style="padding: 12px; background-color: rgba(0, 180, 216, 0.05); border-radius: var(--radius-md); color: #023E8A;">
+                                            {{ user.email }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; color: #023E8A; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Date d'inscription</label>
+                                        <div style="padding: 12px; background-color: rgba(0, 180, 216, 0.05); border-radius: var(--radius-md); color: #023E8A;">
+                                            {{ user.date_joined|date:"d/m/Y" }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Statut du compte -->
+                                <div>
+                                    <label style="display: block; color: #023E8A; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Statut du compte</label>
+                                    <div style="padding: 12px; background-color: rgba(0, 180, 216, 0.05); border-radius: var(--radius-md); display: flex; align-items: center; gap: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            {% if user.is_active %}
+                                                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #1BB35E;"></div>
+                                                <span style="color: #023E8A; font-weight: 500;">Compte actif</span>
+                                            {% else %}
+                                                <div style="width: 12px; height: 12px; border-radius: 50%; background-color: var(--danger);"></div>
+                                                <span style="color: #023E8A; font-weight: 500;">Compte inactif</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Media queries pour le responsive -->
+<style>
+    /* Sur desktop (large screens) */
+    @media (min-width: 992px) {
+        .page-container > div > div > div {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+    }
+    
+    /* Sur tablette */
+    @media (max-width: 991px) and (min-width: 768px) {
+        .page-container > div > div > div {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+    }
+    
+    /* Sur mobile */
+    @media (max-width: 767px) {
+        .page-container {
+            padding: 20px 16px !important;
+        }
+        
+        h1 {
+            font-size: 24px !important;
+        }
+        
+        .offre-card {
+            padding: 20px !important;
+        }
+        
+        .grid-2 {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

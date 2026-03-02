@@ -1,0 +1,937 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des offres{% endblock %}
+{% block content %}
+<div class="page-container">
+    <!-- En-tête avec barre de tâches -->
+    <div class="taskbar" style="margin-bottom: 30px; padding: 20px; background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); border: 1px solid rgba(148, 163, 184, 0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="color: var(--primary); margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-briefcase-fill" style="color: var(--primary);"></i>
+                    Gestion des offres d'emploi
+                </h1>
+                <p style="color: var(--muted); margin: 5px 0 0 0; font-size: 14px;">
+                    Créer, modifier et gérer vos offres d'emploi
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-primary" id="new-offer-btn" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 10px 16px; border-radius: 999px; border: none; cursor: pointer; font-weight: 500;">
+                    <i class="bi bi-plus-circle"></i> Nouvelle offre
+                </button>
+                
+                <div class="dropdown">
+                    <button class="btn-outline" style="display: flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text); padding: 8px 16px; border-radius: 999px; cursor: pointer;">
+                        <i class="bi bi-filter"></i> Filtres
+                    </button>
+                    <div class="dropdown-content" style="right: 0; left: auto; min-width: 200px;">
+                        <div style="padding: 12px 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text); font-weight: 500;">Statut</label>
+                            <select class="form-control-sm" id="filter-status" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(148, 163, 184, 0.3); font-size: 13px; background: var(--card-bg); color: var(--text);">
+                                <option value="">Tous les statuts</option>
+                                <option value="published">Publiées</option>
+                                <option value="draft">Brouillons</option>
+                                <option value="closed">Clôturées</option>
+                            </select>
+                        </div>
+                        <div style="padding: 0 16px 12px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text); font-weight: 500;">Administration</label>
+                            <select class="form-control-sm" id="filter-admin" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(148, 163, 184, 0.3); font-size: 13px; background: var(--card-bg); color: var(--text);">
+                                <option value="">Toutes</option>
+                                {% for admin in administrations %}
+                                <option value="{{ admin.nom }}">{{ admin.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Barre de recherche -->
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <div style="flex: 1; position: relative;">
+                <i class="bi bi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted);"></i>
+                <input type="text" id="search-input" placeholder="Rechercher une offre..." style="width: 100%; padding: 10px 10px 10px 38px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); background: var(--card-bg); font-size: 14px; color: var(--text);">
+            </div>
+            
+            <div style="display: flex; gap: 8px; align-items: center;" id="selection-actions">
+                <span id="selected-count" style="font-size: 13px; color: var(--muted);">0 sélectionné(s)</span>
+                <button class="btn-outline btn-sm" id="publish-selected" style="display: none; padding: 6px 12px; font-size: 12px; background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text); border-radius: 6px; cursor: pointer;">
+                    <i class="bi bi-check-circle"></i> Publier
+                </button>
+                <button class="btn-outline btn-sm" id="draft-selected" style="display: none; padding: 6px 12px; font-size: 12px; background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text); border-radius: 6px; cursor: pointer;">
+                    <i class="bi bi-pencil"></i> Brouillon
+                </button>
+                <button class="btn-outline btn-sm" id="delete-selected" style="display: none; padding: 6px 12px; font-size: 12px; color: var(--danger); border-color: var(--danger); background: var(--card-bg); border-radius: 6px; cursor: pointer;">
+                    <i class="bi bi-trash"></i> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des offres -->
+    <div class="table-container" style="background: var(--card-bg); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.1);">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: var(--bg); border-bottom: 1px solid rgba(148, 163, 184, 0.1);">
+                <tr>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text); width: 40px;">
+                        <input type="checkbox" id="select-all" style="width: 16px; height: 16px;">
+                    </th>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text);">Titre du poste</th>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text);">Administration</th>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text);">Statut</th>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text);">Date limite</th>
+                    <th style="padding: 16px; text-align: left; font-weight: 600; color: var(--text);">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="offers-table-body">
+                <!-- Les offres seront chargées dynamiquement -->
+            </tbody>
+        </table>
+        
+        <!-- Message vide -->
+        <div id="empty-message" style="display: none; padding: 60px 20px; text-align: center; color: var(--muted); background: var(--card-bg);">
+            <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.3; margin-bottom: 15px; color: var(--muted);"></i>
+            <h3 style="color: var(--muted); margin-bottom: 10px;">Aucune offre trouvée</h3>
+            <p style="color: var(--muted);">Créez votre première offre d'emploi en cliquant sur "Nouvelle offre"</p>
+        </div>
+    </div>
+
+    <!-- Pagination (optionnelle) -->
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <p style="color: var(--muted); font-size: 14px;" id="offers-count">
+            Chargement des offres...
+        </p>
+    </div>
+</div>
+
+<!-- Modal pour suppression -->
+<div id="delete-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: var(--card-bg); border-radius: var(--radius-md); padding: 30px; max-width: 400px; width: 90%; box-shadow: var(--shadow-soft);">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                <i class="bi bi-exclamation-triangle" style="font-size: 24px; color: var(--danger);"></i>
+            </div>
+            <h3 style="color: var(--text); margin-bottom: 10px;">Confirmer la suppression</h3>
+            <p id="delete-message" style="color: var(--muted); line-height: 1.5;">Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est irréversible.</p>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button class="btn-outline" id="cancel-delete" style="padding: 10px 20px; background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text); border-radius: 6px; cursor: pointer;">Annuler</button>
+            <button class="btn-primary" id="confirm-delete" style="padding: 10px 20px; background: var(--danger); border-color: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer;">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire d'édition/création -->
+<div id="form-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 20px;">
+    <div style="background: var(--card-bg); border-radius: var(--radius-md); width: 800px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-soft);">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(148, 163, 184, 0.1); display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: var(--primary); margin: 0; font-size: 20px;" id="form-title">
+                <i class="bi bi-plus-circle"></i> Nouvelle offre d'emploi
+            </h2>
+            <button id="close-form" style="background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer;">×</button>
+        </div>
+        
+        <form id="offer-form" style="padding: 24px;">
+            {% csrf_token %}
+            
+            <!-- Section Titre -->
+            <div class="form-section" style="margin-bottom: 24px;">
+                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-card-heading"></i> Titre du poste
+                </h3>
+                <div class="form-group">
+                    <label for="job-title" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                        Titre du poste <span style="color: var(--danger);">*</span>
+                    </label>
+                    <input type="text" id="job-title" class="form-control" placeholder="Ex: Développeur Full Stack Senior" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                    <small style="display: block; margin-top: 6px; color: var(--muted); font-size: 13px;">
+                        Donnez un titre clair et attractif au poste
+                    </small>
+                </div>
+            </div>
+
+            <!-- Section Administration -->
+            <div class="form-section" style="margin-bottom: 24px;">
+                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-building"></i> Administration
+                </h3>
+                <div class="form-group">
+                    <label for="administration" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                        Administration <span style="color: var(--danger);">*</span>
+                    </label>
+                    <select id="administration" name="administration" class="form-control" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                        <option value="">--- Sélectionnez une administration ---</option>
+                        {% for admin in administrations %}
+                            <option value="{{ admin.id_administration }}">{{ admin.nom }} - {{ admin.ville }}</option>
+                        {% endfor %}
+                    </select>
+                    <small style="display: block; margin-top: 6px; color: var(--muted); font-size: 13px;">
+                        Sélectionnez l'administration concernée
+                    </small>
+                </div>
+            </div>
+
+            <!-- Section Description -->
+            <div class="form-section" style="margin-bottom: 24px;">
+                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-text-paragraph"></i> Description
+                </h3>
+                <div class="form-group">
+                    <label for="description" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                        Description détaillée <span style="color: var(--danger);">*</span>
+                    </label>
+                    <textarea id="description" class="form-control" placeholder="Décrivez les missions, compétences requises, avantages..." required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; min-height: 150px; resize: vertical; background: var(--card-bg); color: var(--text);"></textarea>
+                </div>
+            </div>
+
+            <!-- Informations supplémentaires -->
+            <div class="form-section" style="margin-bottom: 24px;">
+                <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-info-circle"></i> Informations supplémentaires
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div class="form-group">
+                        <label for="contract-type" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                            Type de contrat <span style="color: var(--danger);">*</span>
+                        </label>
+                        <select id="contract-type" class="form-control" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                            <option value="CDI">CDI</option>
+                            <option value="CDD">CDD</option>
+                            <option value="Stage">Stage</option>
+                            <option value="Freelance">Freelance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="deadline" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                            Date limite <span style="color: var(--danger);">*</span>
+                        </label>
+                        <input type="date" id="deadline" class="form-control" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                    </div>
+                    <div class="form-group">
+                        <label for="status" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                            Statut <span style="color: var(--danger);">*</span>
+                        </label>
+                        <select id="status" class="form-control" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                            <option value="draft">Brouillon</option>
+                            <option value="published">Publié</option>
+                            <option value="closed">Clôturé</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Grade et Salaire -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+                    <div class="form-group">
+                        <label for="grade" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                            Grade <span style="color: var(--danger);">*</span>
+                        </label>
+                        <select name="grade" id="id_grade" class="form-control" required style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                            <option value="">--- Sélectionnez un grade ---</option>
+                            <option value="grade1">Grade 1</option>
+                            <option value="grade2">Grade 2</option>
+                            <option value="grade3">Grade 3</option>
+                            <option value="grade4">Grade 4</option>
+                            <option value="grade5">Grade 5</option>
+                        </select>
+                        <small style="display: block; margin-top: 6px; color: var(--muted); font-size: 13px;">
+                            Niveau hiérarchique du poste
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="salary" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--text);">
+                            Salaire mensuel (optionnel)
+                        </label>
+                        <div class="input-group" style="display: flex;">
+                            <input type="number" 
+                                id="salary" 
+                                name="salaire"  
+                                class="form-control" 
+                                placeholder="Ex: 3000" 
+                                min="0" 
+                                step="0.01" 
+                                style="width: 100%; padding: 12px; border-radius: var(--radius-md) 0 0 var(--radius-md); border: 1px solid rgba(148, 163, 184, 0.3); font-size: 14px; background: var(--card-bg); color: var(--text);">
+                            <span style="padding: 12px 15px; background: var(--bg); border: 1px solid rgba(148, 163, 184, 0.3); border-left: none; border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--muted); font-size: 14px;">€</span>
+                        </div>
+                        <small style="display: block; margin-top: 6px; color: var(--muted); font-size: 13px;">
+                            Salaire brut mensuel
+                        </small>
+                    </div>
+                </div>
+            
+
+            <!-- Actions du formulaire -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 24px; border-top: 1px solid rgba(148, 163, 184, 0.1);">
+                <button type="button" class="btn-outline" id="cancel-form" style="padding: 10px 20px; background: var(--card-bg); border: 1px solid rgba(148, 163, 184, 0.3); color: var(--text); border-radius: 6px; cursor: pointer;">Annuler</button>
+                <button type="submit" class="btn-primary" style="padding: 10px 20px; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="bi bi-check-circle"></i> Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .status-published {
+        background: rgba(22, 101, 52, 0.1);
+        color: var(--success);
+    }
+    
+    .status-draft {
+        background: rgba(133, 100, 4, 0.1);
+        color: #F59E0B;
+    }
+    
+    .status-closed {
+        background: rgba(114, 28, 36, 0.1);
+        color: var(--danger);
+    }
+    
+    .action-btn {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: var(--card-bg);
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+        background: var(--bg);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: var(--card-bg);
+        min-width: 200px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border-radius: var(--radius-md);
+        z-index: 100;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+</style>
+
+<script>
+    // ============================ VARIABLES GLOBALES ============================
+    let offers = [];
+    let selectedOffers = new Set();
+    let currentEditId = null;
+
+    // ============================ ÉLÉMENTS DOM ============================
+    const offersTableBody = document.getElementById('offers-table-body');
+    const emptyMessage = document.getElementById('empty-message');
+    const selectAllCheckbox = document.getElementById('select-all');
+    const selectedCountSpan = document.getElementById('selected-count');
+    const searchInput = document.getElementById('search-input');
+    const filterStatus = document.getElementById('filter-status');
+    const filterAdmin = document.getElementById('filter-admin');
+    const newOfferBtn = document.getElementById('new-offer-btn');
+    const formModal = document.getElementById('form-modal');
+    const deleteModal = document.getElementById('delete-modal');
+    const offerForm = document.getElementById('offer-form');
+    const offersCountElement = document.getElementById('offers-count');
+
+    // ============================ FONCTIONS UTILITAIRES ============================
+
+    // Fonction pour obtenir le token CSRF
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Fonction pour formater la date
+    function formatDate(dateString) {
+        if (!dateString) return 'Non définie';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+
+    // Fonction pour afficher les notifications
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: ${type === 'success' ? '#10B981' : type === 'warning' ? '#F59E0B' : '#3B82F6'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-soft);
+            z-index: 10000;
+            font-weight: 500;
+            font-size: 14px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // ============================ CHARGEMENT DES DONNÉES ============================
+
+    // Charger les offres depuis l'API Django
+    async function loadOffers() {
+        try {
+            const response = await fetch('/api/offres/');
+            if (!response.ok) throw new Error('Erreur de chargement');
+            
+            offers = await response.json();
+            renderOffers();
+            updateOffersCount();
+        } catch (error) {
+            console.error('Erreur:', error);
+            showToast('Erreur lors du chargement des offres', 'error');
+        }
+    }
+
+    // Mettre à jour le compteur d'offres
+    function updateOffersCount() {
+        if (offersCountElement) {
+            offersCountElement.textContent = `${offers.length} offre(s) trouvée(s)`;
+        }
+    }
+
+    // ============================ AFFICHAGE DES OFFRES ============================
+
+    // Fonction pour afficher les offres
+    function renderOffers() {
+        offersTableBody.innerHTML = '';
+        
+        // Filtrer les offres
+        let filteredOffers = offers.filter(offer => {
+            const matchesSearch = searchInput.value === '' || 
+                offer.title.toLowerCase().includes(searchInput.value.toLowerCase());
+            
+            // Mapper les statuts Django vers les statuts de l'interface
+            const statusMap = {
+                'brouillon': 'draft',
+                'publiee': 'published',
+                'expiree': 'closed',
+                'pourvue': 'closed'
+            };
+            const displayStatus = statusMap[offer.status] || offer.status;
+            const matchesStatus = filterStatus.value === '' || 
+                displayStatus === filterStatus.value;
+            
+            const matchesAdmin = filterAdmin.value === '' || 
+                offer.admin === filterAdmin.value;
+            
+            return matchesSearch && matchesStatus && matchesAdmin;
+        });
+
+        // Afficher ou masquer le message vide
+        if (filteredOffers.length === 0) {
+            emptyMessage.style.display = 'block';
+        } else {
+            emptyMessage.style.display = 'none';
+        }
+
+        // Afficher les offres
+        filteredOffers.forEach(offer => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid rgba(148, 163, 184, 0.1)';
+            
+            // Déterminer la classe de statut
+            let statusClass = '';
+            let statusText = '';
+            
+            // Mapper les statuts Django vers les statuts de l'interface
+            const statusMap = {
+                'brouillon': 'draft',
+                'publiee': 'published',
+                'expiree': 'closed',
+                'pourvue': 'closed'
+            };
+            
+            const displayStatus = statusMap[offer.status] || offer.status;
+            
+            switch(displayStatus) {
+                case 'published':
+                    statusClass = 'status-published';
+                    statusText = 'Publiée';
+                    break;
+                case 'draft':
+                    statusClass = 'status-draft';
+                    statusText = 'Brouillon';
+                    break;
+                case 'closed':
+                    statusClass = 'status-closed';
+                    statusText = 'Clôturée';
+                    break;
+                default:
+                    statusClass = '';
+                    statusText = offer.status.charAt(0).toUpperCase() + offer.status.slice(1);
+            }
+
+            row.innerHTML = `
+                <td style="padding: 16px;">
+                    <input type="checkbox" class="offer-checkbox" data-id="${offer.id}" ${selectedOffers.has(offer.id) ? 'checked' : ''} style="width: 16px; height: 16px;">
+                </td>
+                <td style="padding: 16px; font-weight: 500;">${offer.title}</td>
+                <td style="padding: 16px;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: ar(--bg); border-radius: 6px; font-size: 13px;">
+                        <i class="bi bi-building"></i>
+                        ${offer.admin}
+                    </div>
+                </td>
+                <td style="padding: 16px;">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </td>
+                <td style="padding: 16px; color: ${offer.deadline && new Date(offer.deadline) < new Date() ? 'var(--danger)' : 'var(--text)'}">
+                    ${formatDate(offer.deadline)}
+                </td>
+                <td style="padding: 16px;">
+                    <div style="display: flex; gap: 6px;">
+                        <button class="action-btn edit-btn" data-id="${offer.id}" title="Modifier">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="action-btn delete-btn" data-id="${offer.id}" title="Supprimer" style="color: var(--danger); border-color: var(--danger);">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            offersTableBody.appendChild(row);
+        });
+
+        // Ajouter les écouteurs d'événements
+        document.querySelectorAll('.offer-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', handleCheckboxChange);
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', handleEdit);
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', handleDelete);
+        });
+
+        updateSelectedActions();
+        updateOffersCount();
+    }
+
+    // ============================ GESTION DES ACTIONS ============================
+
+    // Gestion des cases à cocher
+    function handleCheckboxChange(e) {
+        const id = parseInt(e.target.dataset.id);
+        
+        if (e.target.checked) {
+            selectedOffers.add(id);
+        } else {
+            selectedOffers.delete(id);
+            selectAllCheckbox.checked = false;
+        }
+        
+        updateSelectedActions();
+    }
+
+    // Mettre à jour les actions de sélection
+    function updateSelectedActions() {
+        const count = selectedOffers.size;
+        selectedCountSpan.textContent = `${count} sélectionné(s)`;
+        
+        const publishBtn = document.getElementById('publish-selected');
+        const draftBtn = document.getElementById('draft-selected');
+        const deleteBtn = document.getElementById('delete-selected');
+        
+        if (count > 0) {
+            publishBtn.style.display = 'inline-flex';
+            draftBtn.style.display = 'inline-flex';
+            deleteBtn.style.display = 'inline-flex';
+        } else {
+            publishBtn.style.display = 'none';
+            draftBtn.style.display = 'none';
+            deleteBtn.style.display = 'none';
+        }
+    }
+
+    // Gestion de l'édition
+    async function handleEdit(e) {
+        const id = parseInt(e.target.closest('.edit-btn').dataset.id);
+        
+        try {
+            const response = await fetch(`/api/offres/${id}/`);
+            if (!response.ok) throw new Error('Erreur lors du chargement');
+            
+            const offer = await response.json();
+            
+            currentEditId = id;
+            document.getElementById('job-title').value = offer.titre;
+            document.getElementById('administration').value = offer.administration_id;
+            document.getElementById('description').value = offer.description;
+            document.getElementById('deadline').value = offer.date_limite;
+            
+            // Mapper les statuts Django vers l'interface
+            const statusMap = {
+                'brouillon': 'draft',
+                'publiee': 'published',
+                'expiree': 'closed',
+                'pourvue': 'closed'
+            };
+            const displayStatus = statusMap[offer.statut] || offer.statut;
+            document.getElementById('status').value = displayStatus;
+            
+            document.getElementById('contract-type').value = offer.type_contrat;
+            
+            document.getElementById('form-title').innerHTML = '<i class="bi bi-pencil"></i> Modifier l\'offre';
+            formModal.style.display = 'flex';
+        } catch (error) {
+            showToast('Erreur lors du chargement de l\'offre', 'error');
+            console.error(error);
+        }
+    }
+
+    // Gestion de la suppression
+    function handleDelete(e) {
+        const id = parseInt(e.target.closest('.delete-btn').dataset.id);
+        const offer = offers.find(o => o.id === id);
+        
+        if (offer) {
+            document.getElementById('delete-message').textContent = 
+                `Êtes-vous sûr de vouloir supprimer l'offre "${offer.title}" ? Cette action est irréversible.`;
+            deleteModal.style.display = 'flex';
+            
+            document.getElementById('confirm-delete').onclick = async () => {
+                try {
+                    const response = await fetch(`/api/offres/${id}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCsrfToken(),
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({})
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Recharger les offres depuis l'API
+                        await loadOffers();
+                        selectedOffers.delete(id);
+                        showToast(result.message || 'Offre supprimée avec succès', 'success');
+                    } else {
+                        showToast(result.error || 'Erreur lors de la suppression', 'error');
+                    }
+                } catch (error) {
+                    showToast('Erreur lors de la suppression', 'error');
+                    console.error(error);
+                }
+                
+                deleteModal.style.display = 'none';
+            };
+        }
+    }
+
+    // Gestion des actions groupées
+    async function handleBulkAction(action) {
+        if (selectedOffers.size === 0) {
+            showToast('Veuillez sélectionner au moins une offre', 'warning');
+            return;
+        }
+
+        if (action === 'delete') {
+            document.getElementById('delete-message').textContent = 
+                `Êtes-vous sûr de vouloir supprimer ${selectedOffers.size} offre(s) ? Cette action est irréversible.`;
+            deleteModal.style.display = 'flex';
+            
+            document.getElementById('confirm-delete').onclick = async () => {
+                await executeBulkAction(action);
+                deleteModal.style.display = 'none';
+            };
+        } else {
+            await executeBulkAction(action);
+        }
+    }
+
+    async function executeBulkAction(action) {
+        try {
+            const response = await fetch('/api/offres/bulk-action/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    offre_ids: Array.from(selectedOffers),
+                    action: action
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Recharger les offres depuis l'API
+                await loadOffers();
+                selectedOffers.clear();
+                selectAllCheckbox.checked = false;
+                showToast(result.message, 'success');
+            } else {
+                showToast(result.error || 'Erreur lors de l\'opération', 'error');
+            }
+        } catch (error) {
+            showToast('Erreur lors de l\'opération', 'error');
+            console.error(error);
+        }
+    }
+
+    // ============================ GESTION DU FORMULAIRE ============================
+
+    // Fonction pour initialiser le formulaire
+    function initializeForm() {
+        const today = new Date().toISOString().split('T')[0];
+        const deadlineInput = document.getElementById('deadline');
+        if (deadlineInput) {
+            deadlineInput.min = today;
+            deadlineInput.value = today;
+        }
+        
+        // Écouteurs d'événements pour la barre de recherche et filtres
+        searchInput.addEventListener('input', renderOffers);
+        filterStatus.addEventListener('change', renderOffers);
+        filterAdmin.addEventListener('change', renderOffers);
+        
+        // Gestion de la sélection globale
+        selectAllCheckbox.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.offer-checkbox:not([style*="display: none"])');
+            if (this.checked) {
+                checkboxes.forEach(cb => {
+                    cb.checked = true;
+                    selectedOffers.add(parseInt(cb.dataset.id));
+                });
+            } else {
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    selectedOffers.delete(parseInt(cb.dataset.id));
+                });
+            }
+            updateSelectedActions();
+        });
+        
+        // Bouton nouvelle offre
+        newOfferBtn.addEventListener('click', () => {
+            currentEditId = null;
+            if (offerForm) {
+                offerForm.reset();
+                // Réinitialiser les valeurs par défaut
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('deadline').value = today;
+                document.getElementById('status').value = 'draft';
+                document.getElementById('contract-type').value = 'CDI';
+            }
+            document.getElementById('form-title').innerHTML = '<i class="bi bi-plus-circle"></i> Nouvelle offre d\'emploi';
+            formModal.style.display = 'flex';
+        });
+        
+        // Fermer le formulaire
+        const closeFormBtn = document.getElementById('close-form');
+        const cancelFormBtn = document.getElementById('cancel-form');
+        
+        if (closeFormBtn) {
+            closeFormBtn.addEventListener('click', () => {
+                formModal.style.display = 'none';
+            });
+        }
+        
+        if (cancelFormBtn) {
+            cancelFormBtn.addEventListener('click', () => {
+                formModal.style.display = 'none';
+            });
+        }
+        
+        // Gestion du formulaire
+        if (offerForm) {
+            offerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('job-title').value;
+                const admin = document.getElementById('administration').value;
+                const description = document.getElementById('description').value;
+                const deadline = document.getElementById('deadline').value;
+                const status = document.getElementById('status').value;
+                const contract = document.getElementById('contract-type').value;
+                
+                if (!title || !admin || !description || !deadline || !status || !contract) {
+                    showToast('Veuillez remplir tous les champs obligatoires', 'warning');
+                    return;
+                }
+                
+                // Mapper les statuts de l'interface vers Django
+                const statusMap = {
+                    'published': 'publiee',
+                    'draft': 'brouillon',
+                    'closed': 'expiree'
+                };
+                const djangoStatus = statusMap[status] || status;
+                
+                const formData = {
+                    titre: title,
+                    administration_id: admin,
+                    description: description,
+                    type_contrat: contract,
+                    date_limite: deadline,
+                    statut: djangoStatus
+                };
+                
+                try {
+                    const url = currentEditId 
+                        ? `/api/offres/${currentEditId}/update/` 
+                        : '/api/offres/create/';
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCsrfToken(),
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showToast(result.message || 'Offre enregistrée avec succès', 'success');
+                        formModal.style.display = 'none';
+                        
+                        // Recharger les données depuis l'API
+                        await loadOffers();
+                    } else {
+                        showToast(result.error || 'Erreur lors de l\'enregistrement', 'error');
+                    }
+                } catch (error) {
+                    showToast('Erreur lors de l\'enregistrement', 'error');
+                    console.error(error);
+                }
+            });
+        }
+        
+        // Gestion de la modal de suppression
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+        }
+        
+        // Fermer les modales en cliquant à l'extérieur
+        window.addEventListener('click', (e) => {
+            if (e.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+            if (e.target === formModal) {
+                formModal.style.display = 'none';
+            }
+        });
+        
+        // Actions groupées
+        const publishBtn = document.getElementById('publish-selected');
+        const draftBtn = document.getElementById('draft-selected');
+        const deleteBtn = document.getElementById('delete-selected');
+        
+        if (publishBtn) {
+            publishBtn.addEventListener('click', () => handleBulkAction('publish'));
+        }
+        if (draftBtn) {
+            draftBtn.addEventListener('click', () => handleBulkAction('draft'));
+        }
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => handleBulkAction('delete'));
+        }
+    }
+
+    // ============================ INITIALISATION ============================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiser le formulaire
+        initializeForm();
+        
+        // Charger les offres depuis l'API
+        loadOffers();
+        
+        // Ajouter les écouteurs d'événements pour les boutons d'action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.edit-btn')) {
+                handleEdit(e);
+            }
+            if (e.target.closest('.delete-btn')) {
+                handleDelete(e);
+            }
+            if (e.target.closest('.offer-checkbox')) {
+                handleCheckboxChange(e);
+            }
+        });
+    });
+
+    // Ajouter les styles d'animation pour les toasts
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

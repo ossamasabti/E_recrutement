@@ -1,0 +1,763 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section-about">
+    <div class="hero-content-about">
+        <div class="hero-text-about">
+            <h1 class="hero-title-about">À propos de MADA JOB-INCLICK</h1>
+            <p class="hero-subtitle-about">
+                Plateforme numérique innovante pour révolutionner le recrutement dans la fonction publique.
+            </p>
+            <p class="hero-description-about">
+                Créée par des étudiants passionnés par les ressources humaines et les technologies numériques,
+                notre plateforme vise à moderniser et digitaliser le processus de recrutement public.
+            </p>
+        </div>
+        <div class="hero-image-about">
+            <img src="{% static 'images/douae.jpg' %}" 
+                alt="Illustration recrutement" 
+                class="hero-img-about"
+                width="450">
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+<div class="stats-section-about">
+    <div class="stats-grid-about">
+        <div class="stat-card-about">
+            <div class="stat-value-about">4</div>
+            <div class="stat-label-about">Membres de l'équipe</div>
+        </div>
+        <div class="stat-card-about">
+            <div class="stat-value-about">100%</div>
+            <div class="stat-label-about">Engagement</div>
+        </div>
+        <div class="stat-card-about">
+            <div class="stat-value-about">Innovant</div>
+            <div class="stat-label-about">Approche moderne</div>
+        </div>
+        <div class="stat-card-about">
+            <div class="stat-value-about">2030</div>
+            <div class="stat-label-about">Vision digitale</div>
+        </div>
+    </div>
+</div>
+
+<!-- Mission Section -->
+<div class="section-about">
+    <div class="section-header-about">
+        <h2 class="section-title-about">Notre Mission</h2>
+        <p class="section-subtitle-about">
+            Révolutionner le recrutement public avec une plateforme numérique moderne
+        </p>
+    </div>
+    
+    <div class="mission-grid">
+        <div class="mission-card">
+            <div class="mission-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h3 class="mission-title">Transparence</h3>
+            <p class="mission-description">
+                Offrir un processus de recrutement clair, ouvert et accessible à tous les citoyens,
+                garantissant l'équité et la méritocratie.
+            </p>
+        </div>
+        
+        <div class="mission-card">
+            <div class="mission-icon">
+                <i class="bi bi-speedometer2"></i>
+            </div>
+            <h3 class="mission-title">Efficacité</h3>
+            <p class="mission-description">
+                Digitaliser l'ensemble du processus de recrutement pour réduire les délais
+                et améliorer l'expérience des candidats et des administrations.
+            </p>
+        </div>
+        
+        <div class="mission-card">
+            <div class="mission-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3 class="mission-title">Accessibilité</h3>
+            <p class="mission-description">
+                Rendre le recrutement public accessible à tous, sans barrières géographiques
+                ou administratives, grâce à une plateforme numérique intuitive.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Vision Section -->
+<div class="vision-section">
+    <div class="vision-content">
+        <div class="vision-text">
+            <h2 class="vision-title">Notre Vision</h2>
+            <p class="vision-description">
+                Devenir la plateforme de référence pour le recrutement public au niveau national,
+                en digitalisant l'ensemble du processus et en garantissant l'équité et la méritocratie.
+            </p>
+            
+            <div class="vision-item">
+                <div class="vision-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="vision-item-content">
+                    <h3 class="vision-item-title">Digitalisation complète d'ici 2030</h3>
+                    <p class="vision-item-description">
+                        Transformer tous les processus de recrutement public en workflows numériques.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="vision-item">
+                <div class="vision-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="vision-item-content">
+                    <h3 class="vision-item-title">Couverture nationale étendue</h3>
+                    <p class="vision-item-description">
+                        Connecter toutes les administrations et collectivités à notre plateforme.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="vision-item">
+                <div class="vision-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="vision-item-content">
+                    <h3 class="vision-item-title">Intelligence Artificielle</h3>
+                    <p class="vision-item-description">
+                        Intégrer l'IA pour un matching intelligent entre profils et postes.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vision-image">
+            <img src="{% static 'images/about2.png' %}" alt="Illustration vision" class="vision-img">
+        </div>
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="section-about">
+    <div class="section-header-about">
+        <h2 class="section-title-about">Notre Équipe</h2>
+        <p class="section-subtitle-about">
+            Une équipe pluridisciplinaire passionnée par les ressources humaines et les technologies numériques
+        </p>
+    </div>
+    
+    <div class="team-grid">
+        <div class="team-card">
+            <div class="team-avatar">
+                <div class="avatar-circle" style="background-color: #0077B6;">
+                    OS
+                </div>
+                <div class="avatar-badge">
+                    <i class="bi bi-award-fill"></i>
+                </div>
+            </div>
+            <h3 class="team-name">Ossama Sabti</h3>
+            <p class="team-role">Chef de Projet</p>
+            <div class="team-tags">
+                <span class="team-tag" style="background-color: #FF9E00;">Stratégie</span>
+                <span class="team-tag" style="background-color: #00B4D8;">Gestion</span>
+            </div>
+        </div>
+        
+        <div class="team-card">
+            <div class="team-avatar">
+                <div class="avatar-circle" style="background-color: #FF9E00;">
+                    DE
+                </div>
+                <div class="avatar-badge">
+                    <i class="bi bi-code-slash"></i>
+                </div>
+            </div>
+            <h3 class="team-name">Douae Elhaouiti</h3>
+            <p class="team-role">Responsable IT</p>
+            <div class="team-tags">
+                <span class="team-tag" style="background-color: #00B4D8;">Développement</span>
+                <span class="team-tag" style="background-color: #0077B6;">Technologie</span>
+            </div>
+        </div>
+        
+        <div class="team-card">
+            <div class="team-avatar">
+                <div class="avatar-circle" style="background-color: #00B4D8;">
+                    WH
+                </div>
+                <div class="avatar-badge">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+            </div>
+            <h3 class="team-name">Wissal Habchane</h3>
+            <p class="team-role">Secrétaire Général des Offres</p>
+            <div class="team-tags">
+                <span class="team-tag" style="background-color: #0077B6;">RH</span>
+                <span class="team-tag" style="background-color: #FF9E00;">Administration</span>
+            </div>
+        </div>
+        
+        <div class="team-card">
+            <div class="team-avatar">
+                <div class="avatar-circle" style="background-color: var(--primary);">
+                    IZ
+                </div>
+                <div class="avatar-badge">
+                    <i class="bi bi-binoculars"></i>
+                </div>
+            </div>
+            <h3 class="team-name">Ismail Zrigui</h3>
+            <p class="team-role">Superviseur Général</p>
+            <div class="team-tags">
+                <span class="team-tag" style="background-color: #00B4D8;">Supervision</span>
+                <span class="team-tag" style="background-color: #FF6D00;">Qualité</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+    <div class="cta-card">
+        <h2 class="cta-title">Rejoignez la révolution du recrutement public</h2>
+        <p class="cta-description">
+            Que vous soyez candidat à un poste ou administration cherchant des talents,
+            notre plateforme est conçue pour vous.
+        </p>
+        <div class="cta-buttons">
+            <a href="{% url 'liste_offres' %}" class="btn-primary">
+                <i class="bi bi-search"></i>
+                Voir les offres
+            </a>
+            <a href="#" class="btn-outline">
+                <i class="bi bi-envelope"></i>
+                Nous contacter
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hero Section - À propos */
+    .hero-section-about {
+        background: var(--card-bg);
+        border-radius: 0 0 40px 40px;
+        padding: 60px 5vw 80px;
+        margin: -32px -5vw 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .hero-content-about {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hero-text-about {
+        color: var(--text);
+    }
+
+    .hero-title-about {
+        font-size: 48px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle-about {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--primary);
+    }
+
+    .hero-description-about {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        color: var(--muted);
+    }
+
+    .hero-image-about {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-img-about {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    /* Statistics Section */
+    .stats-section-about {
+        padding: 60px 5vw;
+        background: var(--bg);
+    }
+
+    .stats-grid-about {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .stat-card-about {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 32px 24px;
+        text-align: center;
+        border: 2px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .stat-card-about:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+    }
+
+    .stat-value-about {
+        font-size: 48px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .stat-label-about {
+        font-size: 16px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* Section Styles */
+    .section-about {
+        padding: 80px 5vw;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-header-about {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title-about {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .section-subtitle-about {
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Mission Grid */
+    .mission-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+    }
+
+    .mission-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 40px 32px;
+        border: 2px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+        text-align: center;
+    }
+
+    .mission-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .mission-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+    }
+
+    .mission-icon i {
+        font-size: 28px;
+        color: white;
+    }
+
+    .mission-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .mission-description {
+        color: var(--text);
+        line-height: 1.6;
+        opacity: 0.9;
+    }
+
+    /* Vision Section */
+    .vision-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 80px 5vw;
+        border-radius: 40px;
+        margin: 0 auto 80px;
+        max-width: 1200px;
+    }
+
+    .vision-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .vision-text {
+        color: white;
+    }
+
+    .vision-title {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .vision-description {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+        opacity: 0.9;
+    }
+
+    .vision-item {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 32px;
+        transition: transform 0.3s ease;
+    }
+
+    .vision-item:hover {
+        transform: translateX(10px);
+    }
+
+    .vision-icon i {
+        font-size: 24px;
+        color: #FF9E00;
+    }
+
+    .vision-item-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .vision-item-description {
+        opacity: 0.9;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .vision-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .vision-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Team Section */
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 32px;
+    }
+
+    .team-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        text-align: center;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        box-shadow: var(--shadow-soft);
+        transition: all 0.3s ease;
+    }
+
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+        border-color: var(--primary);
+    }
+
+    .team-avatar {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+    }
+
+    .avatar-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 32px;
+        font-weight: 700;
+        border: 3px solid transparent;
+        margin: 0 auto;
+    }
+
+    .avatar-badge {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        background: var(--card-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .team-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+    }
+
+    .team-role {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .team-tags {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .team-tag {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: white;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 80px 5vw;
+        background: var(--bg);
+        border-radius: 40px 40px 0 0;
+        margin: 0 auto;
+        max-width: 1200px;
+    }
+
+    .cta-card {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: var(--radius-lg);
+        padding: 60px 40px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+    }
+
+    .cta-title {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .cta-description {
+        font-size: 18px;
+        opacity: 0.9;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 40px;
+    }
+
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: white;
+        color: var(--primary);
+        padding: 16px 32px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4);
+        background: var(--bg);
+    }
+
+    .btn-outline {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 16px 32px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+        text-decoration: none;
+    }
+
+    .btn-outline:hover {
+        background: white;
+        color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-content-about,
+        .vision-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        
+        .hero-image-about,
+        .vision-image {
+            order: -1;
+        }
+        
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section-about {
+            padding: 40px 5vw 60px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .hero-title-about {
+            font-size: 36px;
+        }
+        
+        .section-title-about {
+            font-size: 28px;
+        }
+        
+        .vision-title {
+            font-size: 28px;
+        }
+        
+        .cta-title {
+            font-size: 28px;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-primary, .btn-outline {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .mission-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-grid-about {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title-about {
+            font-size: 28px;
+        }
+        
+        .section-title-about,
+        .vision-title,
+        .cta-title {
+            font-size: 24px;
+        }
+        
+        .stats-grid-about {
+            grid-template-columns: 1fr;
+        }
+        
+        .vision-item {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
+{% endblock %}

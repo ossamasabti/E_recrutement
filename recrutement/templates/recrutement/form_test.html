@@ -1,0 +1,45 @@
+<!-- templates/recrutement/form_test.html -->
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>TEST FORMULAIRE DJANGO</h1>
+    
+    <!-- Méthode 1: Formulaire complet -->
+    <h2>1. Formulaire complet avec {{ form }} :</h2>
+    <form>
+        {{ form }}
+    </form>
+    
+    <hr>
+    
+    <!-- Méthode 2: Champ par champ -->
+    <h2>2. Champ par champ :</h2>
+    <form>
+        <p><strong>Titre :</strong> {{ form.titre }}</p>
+        <p><strong>Administration :</strong> {{ form.administration }}</p>
+        <p><strong>Description :</strong> {{ form.description }}</p>
+        <p><strong>Grade :</strong> {{ form.grade }}</p>
+        <p><strong>Statut :</strong> {{ form.statut }}</p>
+    </form>
+    
+    <hr>
+    
+    <!-- Méthode 3: HTML manuel avec les IDs -->
+    <h2>3. HTML manuel :</h2>
+    <form>
+        <div>
+            <label for="id_titre">Titre:</label>
+            <input type="text" id="id_titre" name="titre">
+        </div>
+        
+        <div>
+            <label for="id_administration">Administration:</label>
+            <select id="id_administration" name="administration">
+                <option value="">--- Test manuel ---</option>
+                <option value="1">TEST 1</option>
+                <option value="2">TEST 2</option>
+            </select>
+        </div>
+    </form>
+</body>
+</html>

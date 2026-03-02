@@ -1,0 +1,118 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord RH{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4">Tableau de bord RH</h1>
+            
+            <!-- Cartes de statistiques -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Mes offres</h5>
+                            <h2>{{ stats.total_offres_rh }}</h2>
+                            <p class="card-text">dont {{ stats.offres_actives_rh }} actives</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Candidatures</h5>
+                            <h2>{{ stats.total_candidatures_rh }}</h2>
+                            <p class="card-text">{{ stats.candidatures_recentes_rh }} cette semaine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Actions rapides</h5>
+                            <div class="mt-3">
+                                <a href="{% url 'ajouter_offre' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Créer une offre
+                                </a>
+                                <a href="{% url 'admin_liste_offres' %}" class="btn btn-secondary">
+                                    <i class="fas fa-list"></i> Gérer mes offres
+                                </a>
+                                <a href="{% url 'profile' %}" class="btn btn-info">
+                                    <i class="fas fa-user"></i> Mon profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Candidatures récentes -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Candidatures récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if candidatures_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Candidat</th>
+                                    <th>Offre</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for candidature in candidatures_recentes %}
+                                <tr>
+                                    <td>{{ candidature.candidat.get_full_name|default:candidature.candidat.username }}</td>
+                                    <td>{{ candidature.offre.titre }}</td>
+                                    <td>{{ candidature.date_depot|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ candidature.statut|yesno:'success,info,warning' }}">
+                                            {{ candidature.get_statut_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune candidature récente.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Offres actives -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Mes offres actives</h5>
+                </div>
+                <div class="card-body">
+                    {% if offres_actives %}
+                    <div class="list-group">
+                        {% for offre in offres_actives %}
+                        <a href="{% url 'detail_offre' offre.id_offre %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ offre.titre }}</h6>
+                                <small>J-{{ offre.jours_restants }}</small>
+                            </div>
+                            <p class="mb-1">{{ offre.administration.nom }}</p>
+                            <small>{{ offre.get_type_contrat_display }} • {{ offre.get_grade_display }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune offre active. <a href="{% url 'ajouter_offre' %}">Créez-en une !</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

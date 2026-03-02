@@ -1,0 +1,125 @@
+{% extends 'recrutement/base.html' %}
+{% load static %}
+
+{% block title %}Confirmer la suppression{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0 text-center">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Confirmer la suppression
+                    </h4>
+                </div>
+                
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="avatar-lg bg-danger text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="bi bi-trash"></i>
+                        </div>
+                        
+                        <h3 class="text-danger">Attention !</h3>
+                        <p class="lead">Vous êtes sur le point de supprimer l'utilisateur :</p>
+                        
+                        <div class="alert alert-dark">
+                            <h5 class="mb-1">{{ user.username }}</h5>
+                            <p class="mb-0">{{ user.email }}</p>
+                            <small class="text-muted">
+                                {{ user.first_name }} {{ user.last_name }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-info-circle me-1"></i> Conséquences de cette action :</h6>
+                        <ul class="mb-0">
+                            <li>Toutes les données de l'utilisateur seront définitivement supprimées</li>
+                            <li>Toutes ses candidatures seront supprimées</li>
+                            <li>Tous ses fichiers (CV, lettres) seront supprimés</li>
+                            <li>Cette action est irréversible !</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'detail_utilisateur' user.id %}" 
+                           class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Annuler et retourner
+                        </a>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash me-1"></i>
+                                Confirmer la suppression
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card-footer text-center text-muted py-3">
+                    <small>
+                        <i class="bi bi-shield-exclamation me-1"></i>
+                        Cette action nécessite des privilèges d'administration
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-lg {
+        font-weight: bold;
+    }
+    
+    .card {
+        border-radius: 10px;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .alert ul {
+        margin-bottom: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .alert li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Double confirmation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const confirmation = confirm('Êtes-vous ABSOLUMENT sûr de vouloir supprimer cet utilisateur ? Cette action ne peut pas être annulée !');
+                if (!confirmation) {
+                    e.preventDefault();
+                }
+            });
+        }
+        
+        // Animation d'avertissement
+        const warningIcon = document.querySelector('.bi-exclamation-triangle');
+        if (warningIcon) {
+            setInterval(() => {
+                warningIcon.classList.toggle('text-warning');
+            }, 1000);
+        }
+    });
+</script>
+{% endblock %}

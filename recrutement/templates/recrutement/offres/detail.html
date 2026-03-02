@@ -1,0 +1,1417 @@
+{% extends "recrutement/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="offre-detail-container">
+    <!-- Bannière de l'offre -->
+    <div class="offre-banner">
+        <div class="offre-banner-overlay"></div>
+        
+        <div class="offre-banner-content">
+            <div class="offre-banner-badge">
+                <i class="bi bi-briefcase"></i>
+                Offre d'emploi
+            </div>
+            <h1 class="offre-banner-title">{{ offre.titre }}</h1>
+            <div class="offre-banner-info">
+                <div class="banner-info-item">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Publiée le {{ offre.date_publication|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Retour aux offres -->
+        <a href="{% url 'liste_offres' %}" class="offre-back-btn">
+            <i class="bi bi-arrow-left"></i>
+            Retour aux offres
+        </a>
+    </div>
+
+    <div class="offre-content-wrapper">
+        <!-- Fil d'Ariane -->
+        <div class="breadcrumb-nav">
+            <a href="{% url 'home' %}" class="breadcrumb-item">
+                <i class="bi bi-house-door"></i>
+                Accueil
+            </a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'liste_offres' %}" class="breadcrumb-item">
+                <i class="bi bi-list"></i>
+                Offres d'emploi
+            </a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-item active">
+                {{ offre.titre|truncatechars:40 }}
+            </span>
+        </div>
+
+        <div class="offre-layout">
+            <!-- Colonne principale (gauche) -->
+            <div class="offre-main-content">
+                <!-- Carte détaillée de l'offre -->
+                <div class="offre-card-detailed">
+                    <!-- En-tête avec image et info -->
+                    <div class="offre-card-header">
+                        <div class="offre-image-section">
+                            <div class="offre-image-container">
+                                <img src="{% static 'images/offre.jpg' %}" 
+                                     alt="Illustration recrutement" 
+                                     class="offre-detail-image">
+                            </div>
+                        </div>
+                        
+                        <div class="offre-info-section">
+                            <h2 class="offre-title-main">{{ offre.titre }}</h2>
+                            
+                            <div class="offre-badges">
+                                <span class="badge-grade">
+                                    <i class="bi bi-tag"></i>
+                                    {{ offre.get_grade_display }}
+                                </span>
+                                <span class="badge-status {% if offre.est_expiree %}expired{% else %}active{% endif %}">
+                                    <i class="bi bi-clock"></i>
+                                    {% if offre.est_expiree %}Expirée{% else %}En cours{% endif %}
+                                </span>
+                                <span class="badge-posts">
+                                    <i class="bi bi-person-plus"></i>
+                                    {{ offre.nombre_postes }} poste{{ offre.nombre_postes|pluralize }}
+                                </span>
+                            </div>
+                            
+                            <!-- Salaire -->
+                            <div class="offre-salary-display">
+                                <div class="salary-label">Salaire</div>
+                                <div class="salary-amount">
+                                    {% if offre.salaire %}
+                                        {{ offre.salaire }} €
+                                    {% else %}
+                                        À négocier
+                                    {% endif %}
+                                </div>
+                                <div class="salary-period">/ mois</div>
+                            </div>
+                            
+                            <!-- Informations rapides -->
+                            <div class="offre-quick-info">
+                                <div class="quick-info-item">
+                                    <i class="bi bi-calendar-x"></i>
+                                    <div>
+                                        <div class="quick-info-label">Date limite</div>
+                                        <div class="quick-info-value">{{ offre.date_limite|date:"d/m/Y" }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="quick-info-item">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    <div>
+                                        <div class="quick-info-label">Type de contrat</div>
+                                        <div class="quick-info-value">{{ offre.get_type_contrat_display }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description du poste -->
+                    <div class="offre-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-file-text"></i>
+                            Description du poste
+                        </h3>
+                        <div class="description-content">
+                            {{ offre.description|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Responsabilités -->
+                    {% if offre.responsabilites %}
+                    <div class="offre-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-list-task"></i>
+                            Responsabilités
+                        </h3>
+                        <div class="responsabilities-grid">
+                            {% for resp in offre.responsabilites %}
+                            <div class="responsability-item">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>{{ resp }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Localisation -->
+                    <div class="offre-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-geo-alt"></i>
+                            Localisation
+                        </h3>
+                        <div class="location-card">
+                            <div class="location-icon">
+                                <i class="bi bi-geo-alt"></i>
+                            </div>
+                            
+                            <div class="location-details">
+                                {% if offre.lieu %}
+                                <div class="location-item">
+                                    <div class="location-label">
+                                        <i class="bi bi-pin-map"></i>
+                                        Lieu de travail
+                                    </div>
+                                    <p>{{ offre.lieu }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if offre.administration.adresse %}
+                                <div class="location-item">
+                                    <div class="location-label">
+                                        <i class="bi bi-building"></i>
+                                        Adresse
+                                    </div>
+                                    <p>{{ offre.administration.adresse }}</p>
+                                    {% if offre.administration.telephone %}
+                                    <div class="location-contact">
+                                        <i class="bi bi-telephone"></i>
+                                        <span>{{ offre.administration.telephone }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                {% if not offre.lieu and not offre.administration.adresse %}
+                                <div class="no-location">
+                                    <i class="bi bi-info-circle"></i>
+                                    Localisation non spécifiée
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents associés -->
+                    {% if offre.documents.exists %}
+                    <div class="offre-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-paperclip"></i>
+                            Documents associés
+                        </h3>
+                        <div class="documents-grid">
+                            {% for doc in offre.documents.all %}
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                </div>
+                                <div class="document-info">
+                                    <div class="document-title">{{ doc.titre }}</div>
+                                    <div class="document-details">
+                                        {{ doc.get_type_display }} • {{ doc.fichier.size|filesizeformat }}
+                                    </div>
+                                </div>
+                                <a href="{{ doc.fichier.url }}" target="_blank" class="document-download">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Colonne latérale (droite) -->
+            <div class="offre-sidebar">
+                <!-- Carte de postulation -->
+                <div class="application-card">
+                    <div class="application-header">
+                        <h4>
+                            <i class="bi bi-send-check"></i>
+                            Postuler maintenant
+                        </h4>
+                    </div>
+                    
+                    <div class="application-content">
+                        {% if offre.est_expiree %}
+                        <div class="expired-offer">
+                            <div class="expired-icon">
+                                <i class="bi bi-calendar-x"></i>
+                            </div>
+                            <h5>Offre expirée</h5>
+                            <p class="expired-text">
+                                La date limite de candidature était le 
+                                <strong>{{ offre.date_limite|date:"d/m/Y" }}</strong>
+                            </p>
+                            <a href="{% url 'liste_offres' %}" class="btn-primary btn-full">
+                                Voir les offres actuelles
+                            </a>
+                        </div>
+                        
+                        {% elif a_postule %}
+                        <div class="already-applied">
+                            <div class="applied-icon">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <h5>Candidature envoyée</h5>
+                            <p class="applied-text">
+                                Vous avez déjà postulé à cette offre. Votre candidature est en cours d'examen.
+                            </p>
+                            <div class="info-note">
+                                <i class="bi bi-info-circle"></i>
+                                Vous serez contacté par email pour la suite du processus.
+                            </div>
+                        </div>
+                        
+                        {% elif user.is_authenticated %}
+                        <div class="application-form-section">
+                            <div class="user-info">
+                                <div class="user-icon">
+                                    <i class="bi bi-person-check"></i>
+                                </div>
+                                <p class="user-welcome">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Vous êtes connecté en tant que
+                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                </p>
+                            </div>
+                            
+                            <div class="cv-info">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <div>
+                                    <strong>Votre CV sera automatiquement inclus</strong>
+                                    <p>Si vous avez un CV par défaut, il sera joint à votre candidature.</p>
+                                </div>
+                            </div>
+                            
+                            {% if offre.id_offre %}
+                            <form method="post" action="{% url 'postuler' offre.id_offre %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-apply">
+                                    <i class="bi bi-send-check"></i>
+                                    Postuler maintenant
+                                </button>
+                            </form>
+                            {% else %}
+                            <div class="error-note">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Erreur : Cette offre n'a pas d'ID valide.
+                            </div>
+                            {% endif %}
+                            
+                            <div class="terms-note">
+                                <i class="bi bi-shield-check"></i>
+                                En postulant, vous acceptez nos conditions d'utilisation.
+                            </div>
+                        </div>
+                        
+                        {% else %}
+                        <div class="login-required">
+                            <div class="login-icon">
+                                <i class="bi bi-person-lock"></i>
+                            </div>
+                            <h5>Connexion requise</h5>
+                            <p class="login-text">
+                                Vous devez être connecté pour postuler à cette offre.
+                            </p>
+                            
+                            <div class="auth-buttons">
+                                <a href="{% url 'login' %}?next={{ request.path }}" class="btn-primary btn-full">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Se connecter
+                                </a>
+                                
+                                <a href="{% url 'register' %}" class="btn-outline btn-full">
+                                    <i class="bi bi-person-plus"></i>
+                                    Créer un compte
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Informations complémentaires -->
+                    <div class="additional-info">
+                        <h6>
+                            <i class="bi bi-info-circle"></i>
+                            Informations clés
+                        </h6>
+                        <ul class="info-list">
+                            <li class="info-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <div>
+                                    <div class="info-label">Date limite</div>
+                                    <div class="info-value">{{ offre.date_limite|date:"d/m/Y" }}</div>
+                                </div>
+                            </li>
+                            <li class="info-item">
+                                <i class="bi bi-building"></i>
+                                <div>
+                                    <div class="info-label">Administration</div>
+                                    <div class="info-value">{{ offre.administration.nom }}</div>
+                                </div>
+                            </li>
+                            <li class="info-item">
+                                <i class="bi bi-person-badge"></i>
+                                <div>
+                                    <div class="info-label">Grade</div>
+                                    <div class="info-value">{{ offre.get_grade_display }}</div>
+                                </div>
+                            </li>
+                            <li class="info-item">
+                                <i class="bi bi-clock-history"></i>
+                                <div>
+                                    <div class="info-label">Publiée le</div>
+                                    <div class="info-value">{{ offre.date_publication|date:"d/m/Y" }}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Partage de l'offre -->
+                <div class="share-card">
+                    <h6>
+                        <i class="bi bi-share"></i>
+                        Partager cette offre
+                    </h6>
+                    <div class="share-buttons">
+                        <a href="#" class="share-btn facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="share-btn twitter">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="share-btn linkedin">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="#" class="share-btn link">
+                            <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .offre-detail-container {
+        padding-top: 0;
+    }
+
+    /* Bannière de l'offre */
+    .offre-banner {
+        position: relative;
+        height: 300px;
+        background: linear-gradient(135deg, #023E8A 0%, #3d3d83 100%);
+        overflow: hidden;
+        padding: 40px 5vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .offre-banner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);
+    }
+
+    .offre-banner-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+    }
+
+    .offre-banner-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .offre-banner-title {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        line-height: 1.1;
+    }
+
+    .offre-banner-info {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .banner-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        opacity: 0.9;
+    }
+
+    .offre-back-btn {
+        position: absolute;
+        top: 20px;
+        left: 5vw;
+        background: white;
+        color: #023E8A;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 3;
+    }
+
+    .offre-back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Fil d'Ariane */
+    .breadcrumb-nav {
+        padding: 20px 5vw;
+        background: #F8FAFC;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .breadcrumb-item {
+        color: #023E8A;
+        text-decoration: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb-item:hover {
+        color: #3d3d83;
+        text-decoration: underline;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    .breadcrumb-separator {
+        color: var(--muted);
+        opacity: 0.6;
+    }
+
+    /* Layout principal */
+    .offre-content-wrapper {
+        padding: 0 5vw 60px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .offre-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 40px;
+        margin-top: 20px;
+    }
+
+    /* Carte détaillée */
+    .offre-card-detailed {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .offre-card-header {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        background: #F8FAFC;
+    }
+
+    .offre-image-section {
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+
+    .offre-detail-image {
+        max-width: 100%;
+        max-height: 180px;
+        object-fit: contain;
+    }
+
+    .offre-info-section {
+        padding: 30px;
+    }
+
+    .offre-title-main {
+        font-size: 28px;
+        font-weight: 800;
+        color: #023E8A;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .offre-badges {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .badge-grade,
+    .badge-status,
+    .badge-posts {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-grade {
+        background: rgba(0, 180, 216, 0.1);
+        color: #00B4D8;
+        border: 1px solid #00B4D8;
+    }
+
+    .badge-status.active {
+        background: rgba(255, 158, 0, 0.1);
+        color: #FF9E00;
+        border: 1px solid #FF9E00;
+    }
+
+    .badge-status.expired {
+        background: rgba(229, 57, 53, 0.1);
+        color: #E53935;
+        border: 1px solid #E53935;
+    }
+
+    .badge-posts {
+        background: rgba(2, 62, 138, 0.1);
+        color: #023E8A;
+        border: 1px solid #023E8A;
+    }
+
+    .offre-salary-display {
+        text-align: right;
+        padding: 16px;
+        background: rgba(0, 180, 216, 0.05);
+        border-radius: var(--radius-md);
+        margin-bottom: 30px;
+    }
+
+    .salary-label {
+        font-size: 14px;
+        color: #023E8A;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .salary-amount {
+        font-size: 32px;
+        font-weight: 800;
+        color: #023E8A;
+        line-height: 1;
+    }
+
+    .salary-period {
+        font-size: 14px;
+        color: var(--muted);
+    }
+
+    .offre-quick-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .quick-info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: rgba(0, 180, 216, 0.05);
+        border-radius: var(--radius-md);
+    }
+
+    .quick-info-item i {
+        font-size: 24px;
+        color: #00B4D8;
+    }
+
+    .quick-info-label {
+        font-size: 13px;
+        color: #023E8A;
+        margin-bottom: 4px;
+    }
+
+    .quick-info-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #023E8A;
+    }
+
+    /* Sections */
+    .offre-section {
+        padding: 40px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .offre-section:last-child {
+        border-bottom: none;
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #023E8A;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .section-title i {
+        font-size: 28px;
+    }
+
+    .description-content {
+        color: var(--text);
+        line-height: 1.8;
+        font-size: 16px;
+    }
+
+    .description-content p {
+        margin-bottom: 16px;
+    }
+
+    .description-content ul,
+    .description-content ol {
+        padding-left: 24px;
+        margin-bottom: 16px;
+    }
+
+    .description-content li {
+        margin-bottom: 8px;
+    }
+
+    /* Responsabilités */
+    .responsabilities-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .responsability-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(0, 180, 216, 0.05);
+        border-radius: var(--radius-md);
+    }
+
+    .responsability-item i {
+        color: #00B4D8;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    /* Localisation */
+    .location-card {
+        background: rgba(0, 180, 216, 0.05);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        display: flex;
+        gap: 24px;
+    }
+
+    .location-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 119, 182, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .location-icon i {
+        font-size: 24px;
+        color: #0077B6;
+    }
+
+    .location-details {
+        flex-grow: 1;
+    }
+
+    .location-item {
+        margin-bottom: 24px;
+    }
+
+    .location-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .location-label {
+        font-weight: 700;
+        color: #023E8A;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .location-contact {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        color: #023E8A;
+        font-size: 14px;
+    }
+
+    .no-location {
+        text-align: center;
+        padding: 20px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    /* Documents */
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .document-card {
+        background: white;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .document-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-soft);
+        border-color: #023E8A;
+    }
+
+    .document-icon {
+        font-size: 32px;
+        color: #FF6B6B;
+        flex-shrink: 0;
+    }
+
+    .document-info {
+        flex-grow: 1;
+    }
+
+    .document-title {
+        font-weight: 700;
+        color: #023E8A;
+        margin-bottom: 4px;
+    }
+
+    .document-details {
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .document-download {
+        width: 40px;
+        height: 40px;
+        background: #00B4D8;
+        color: white;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .document-download:hover {
+        background: #023E8A;
+        transform: scale(1.1);
+    }
+
+    /* Sidebar */
+    .offre-sidebar {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+
+    /* Carte de postulation */
+    .application-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        margin-bottom: 24px;
+    }
+
+    .application-header {
+        background: linear-gradient(135deg, #023E8A 0%, #3d3d83 100%);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .application-header h4 {
+        color: white;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .application-content {
+        padding: 30px;
+    }
+
+    /* États de postulation */
+    .expired-offer,
+    .already-applied,
+    .application-form-section,
+    .login-required {
+        text-align: center;
+    }
+
+    .expired-icon,
+    .applied-icon,
+    .user-icon,
+    .login-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 109, 0, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .expired-icon i {
+        font-size: 32px;
+        color: #FF6D00;
+    }
+
+    .applied-icon {
+        background: rgba(0, 180, 216, 0.1);
+    }
+
+    .applied-icon i {
+        font-size: 32px;
+        color: #00B4D8;
+    }
+
+    .user-icon {
+        background: rgba(0, 119, 182, 0.1);
+    }
+
+    .user-icon i {
+        font-size: 32px;
+        color: #0077B6;
+    }
+
+    .login-icon {
+        background: rgba(255, 158, 0, 0.1);
+    }
+
+    .login-icon i {
+        font-size: 32px;
+        color: #FF9E00;
+    }
+
+    .expired-offer h5,
+    .already-applied h5,
+    .login-required h5 {
+        color: #023E8A;
+        margin-bottom: 12px;
+    }
+
+    .expired-text,
+    .applied-text,
+    .login-text {
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .user-welcome {
+        color: #023E8A;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    .user-welcome i {
+        color: #00B4D8;
+        margin-right: 6px;
+    }
+
+    /* Info notes */
+    .info-note,
+    .error-note,
+    .terms-note,
+    .cv-info {
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .info-note {
+        background: #E3F2FD;
+        color: #023E8A;
+        border: 1px solid rgba(2, 62, 138, 0.2);
+    }
+
+    .error-note {
+        background: #FEF2F2;
+        color: #B91C1C;
+        border: 1px solid #FECACA;
+    }
+
+    .terms-note {
+        background: #F8FAFC;
+        color: var(--muted);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        margin-top: 20px;
+    }
+
+    .cv-info {
+        background: #F0F9FF;
+        color: #023E8A;
+        border: 1px solid rgba(0, 180, 216, 0.2);
+    }
+
+    /* Boutons */
+    .btn-apply {
+        background: linear-gradient(135deg, #FF9E00 0%, #FF6D00 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(255, 158, 0, 0.3);
+        width: 100%;
+    }
+
+    .btn-apply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(255, 158, 0, 0.4);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #023E8A, #3d3d83);
+        color: white;
+        padding: 14px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(2, 62, 138, 0.3);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(2, 62, 138, 0.4);
+    }
+
+    .btn-outline {
+        background: white;
+        color: #023E8A;
+        padding: 14px;
+        border-radius: var(--radius-md);
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid #023E8A;
+    }
+
+    .btn-outline:hover {
+        background: #023E8A;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-full {
+        width: 100%;
+    }
+
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Informations complémentaires */
+    .additional-info {
+        padding: 24px;
+        background: rgba(0, 180, 216, 0.05);
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .additional-info h6 {
+        color: #023E8A;
+        margin-bottom: 20px;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-item i {
+        font-size: 20px;
+        color: #00B4D8;
+        flex-shrink: 0;
+    }
+
+    .info-label {
+        font-size: 13px;
+        color: #023E8A;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #023E8A;
+    }
+
+    /* Partage */
+    .share-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .share-card h6 {
+        color: #023E8A;
+        margin-bottom: 20px;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .share-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .share-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .share-btn.facebook {
+        background: #4267B2;
+    }
+
+    .share-btn.twitter {
+        background: #1DA1F2;
+    }
+
+    .share-btn.linkedin {
+        background: #0077B5;
+    }
+
+    .share-btn.link {
+        background: #00B4D8;
+    }
+
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .offre-layout {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .offre-sidebar {
+            position: static;
+            order: -1;
+        }
+
+        .application-card {
+            margin-bottom: 0;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .offre-card-header {
+            grid-template-columns: 1fr;
+        }
+
+        .offre-image-section {
+            min-height: 150px;
+            padding: 20px;
+        }
+
+        .offre-banner-title {
+            font-size: 36px;
+        }
+
+        .offre-title-main {
+            font-size: 24px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .offre-banner {
+            height: 250px;
+            padding: 60px 5vw 40px;
+        }
+
+        .offre-banner-title {
+            font-size: 28px;
+        }
+
+        .offre-banner-badge {
+            font-size: 14px;
+            padding: 6px 16px;
+        }
+
+        .offre-back-btn {
+            top: 15px;
+            left: 5vw;
+        }
+
+        .offre-content-wrapper {
+            padding: 0 5vw 40px;
+        }
+
+        .offre-section {
+            padding: 30px 20px;
+        }
+
+        .offre-info-section {
+            padding: 20px;
+        }
+
+        .offre-quick-info {
+            grid-template-columns: 1fr;
+        }
+
+        .responsabilities-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .breadcrumb-nav {
+            padding: 16px 5vw;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .offre-banner {
+            height: 200px;
+        }
+
+        .offre-banner-title {
+            font-size: 24px;
+        }
+
+        .offre-banner-info {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .offre-badges {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .section-title {
+            font-size: 20px;
+        }
+
+        .location-card {
+            flex-direction: column;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .application-content {
+            padding: 20px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation pour le bouton de postulation
+        const applyBtn = document.querySelector('.btn-apply');
+        if (applyBtn) {
+            applyBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            applyBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        }
+        
+        // Animation pour les badges
+        const badges = document.querySelectorAll('.badge-grade, .badge-status, .badge-posts');
+        badges.forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Animation pour les cartes de documents
+        const documentCards = document.querySelectorAll('.document-card');
+        documentCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Animation pour les boutons de partage
+        const shareBtns = document.querySelectorAll('.share-btn');
+        shareBtns.forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Prévenir la soumission multiple du formulaire
+        const applicationForm = document.querySelector('form');
+        if (applicationForm) {
+            let formSubmitted = false;
+            
+            applicationForm.addEventListener('submit', function(e) {
+                if (formSubmitted) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                formSubmitted = true;
+                const submitBtn = this.querySelector('.btn-apply');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i>Traitement en cours...';
+                    submitBtn.disabled = true;
+                }
+                
+                return true;
+            });
+        }
+    });
+</script>
+{% endblock %}
